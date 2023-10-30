@@ -1,7 +1,18 @@
 {% extends 'app1/base.html' %}
+{% load social_share %}
+    {% load static %}
     {% block body %}
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+     integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
 
     <style>
+         .modal{
+      z-index: 9999;
+      overflow: scroll;
+    }
         #div1{
             width: 33.33%;
             float: left;
@@ -300,19 +311,76 @@
                         <div class="collapse navbar-collapse" id="navbarScroll">
                             <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
                                 <li class="nav-item active" >
-                                <a class="nav-link text-light  btn btn-outline-info rounded-pill text-grey p-1" role="button" onclick="window.print()">&nbsp;&nbsp;Print&nbsp;&nbsp;<span class="sr-only">(current)</span></a>
+                                <a class="nav-link text-light  btn btn-outline-info  text-grey p-1" role="button"  id="templatePrintButton" onclick="printSection('whatToPrint')">&nbsp;&nbsp;Print&nbsp;&nbsp;<span class="sr-only">(current)</span></a>
                                 </li>
+                                
                                 <li class="nav-item mx-1">
-                                    <a class="nav-link text-light btn btn-outline-info rounded-pill text-grey p-1" role="button" href="{% url 'render_pdf_credit' pcrd.screditid %}">
+                                    <a class="nav-link text-light btn btn-outline-info  text-grey p-1" role="button" href="{% url 'render_pdf_credit' pcrd.screditid %}">
                                         &nbsp;&nbsp;PDF&nbsp;&nbsp;
                                     </a>
                                 </li>
-                                <li class="nav-item mx-1">
-                                    <a class="nav-link text-light  btn btn-outline-info rounded-pill text-grey  p-1" role="button" href="{% url 'editcreditnote' pcrd.screditid %}">&nbsp;&nbsp;Edit&nbsp;&nbsp;</a>
+                                {% if pcrd.status == 'Draft' %}
+                                <li class="nav-item">
+                                    <a class="nav-link text-light btn btn-outline-info  " role="button" href="{% url 'credit_change_status' pcrd.screditid %}" title="save this draft" style="height: 2.2rem;">
+                                        <span style="position: relative;top: -4px;">&nbsp;&nbsp;Save&nbsp;&nbsp;</span>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                <li class="nav-item dropdown mx-1">
+                                    <a class="nav-link dropdown-toggle text-light btn btn-outline-info " href="#" id="navbarDropdown" role="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 2.2rem;">
+                                        <span style="position: relative;top: -4px;">Share</span>
+                                    </a>
+                                   
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+      
+    
+                                        <li style="margin-left: 50px;" >{% post_to_whatsapp object_or_url "WhatsApp" %} </li>
+                                        <li style="margin-left: 50px;" >{% send_email object.title "New: {{object.title}}. Check it out!" object_or_url "Email" %}</li>
+                                        
+                                    </ul>
                                 </li>
                                 <li class="nav-item mx-1">
-                                    <a class="nav-link text-light  btn btn-outline-info rounded-pill text-grey p-1" role="button" href="{% url 'deletecredit' pcrd.screditid %}">&nbsp;&nbsp;Delete&nbsp;&nbsp;</a>
+                                    <a class="nav-link text-light  btn btn-outline-info  text-grey  p-1" role="button" href="{% url 'editcreditnote' pcrd.screditid %}">&nbsp;&nbsp;Edit&nbsp;&nbsp;</a>
                                 </li>
+                                <!-- <li class="nav-item mx-1">
+                                    <button id="toggleTemplate4" class="nav-link text-light  btn btn-outline-info  text-grey  p-1"  onclick="show_slip()"><span >&nbsp;&nbsp;Slip&nbsp;&nbsp;</span></button>
+                                </li> -->
+
+                                <li class="nav-item mx-1">
+                                    <a class="nav-link text-light  btn btn-outline-info  text-grey p-1" role="button" href="{% url 'deletecredit' pcrd.screditid %}">&nbsp;&nbsp;Delete&nbsp;&nbsp;</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-light btn btn-outline-info " href="#" id="navbarDropdown" role="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 2.2rem;width: 4rem;">
+                                        <span style="position: relative;top: -4px;">File</span>
+                                    </a>
+                                   
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+      
+    
+                                        <a class="dropdown-item" data-toggle="modal" data-target="#file"><i class="fa fa-paperclip">&nbsp;Attach File</i></a>
+                                        {% if pcrd.file != "default.png" %}
+                                            <a class="dropdown-item" download  href="{{ pcrd.file.url }}"><i class="fa fa-download">&nbsp;Download File</i></a>
+                                        {% endif %}
+                                        
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown mx-1">
+                                    <a class="nav-link dropdown-toggle text-light btn btn-outline-info " href="#" id="navbarDropdown" role="button"
+                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="height: 2.2rem;width: 4rem;">
+                                        <span style="position: relative;top: -4px;">Slip</span>
+                                    </a>
+                                   
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+      
+    
+                                        <a class="dropdown-item" onclick="show_slip()">View</a>
+                                        <a id="slip" class="dropdown-item" >Print</a>                                        
+                                    </ul>
+                                </li>
+                                
                             </ul>
                         </div>
                     </nav>
@@ -323,7 +391,7 @@
         <div class="card">
             <div class="card-body">
                 
-            <div id="details">
+            <div id="details" style="display: block;">
                 <div class="row g-0" >
                    
                     <div class="col-lg-8">
@@ -557,8 +625,15 @@
 
                 </div>
 
+               
+
 
                 <div id="templatesToPrintSection" style="display: none;">
+
+                   
+
+
+
                     <div id="templateToggle" class="templateToggleSegment mt-3 mb-0 w-100 d-flex justify-content-center">
                         <button id="toggleTemplate1" onclick="toggleTemplate('whatToPrint','toggleTemplate1')" class="btn btn-outline-light btn-sm m-2 active templateToggleButtons">1</button>
                         <button id="toggleTemplate2" onclick="toggleTemplate('whatToPrint2','toggleTemplate2')" class="btn btn-outline-light btn-sm m-2 templateToggleButtons">2</button>
@@ -1040,13 +1115,175 @@
            </div>
            
            
-           </div>
+    </div>
 
 
+    
+    
+    <div class="modal fade" id="file" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="background-color: #213b52;">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form action="{% url 'attach_credit_note_file' pcrd.screditid %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+                    <div class="modal-body">
+                        <input type="file" class="form-control" name="file">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-info" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-outline-info">Save</button>
+                    </div>
+                </form>
             </div>
-
         </div>
+    </div>
 
+
+    <div id="print_slip"  style="display: none;" >
+        <div class="p-3 mt-3">
+            <div class="row">
+                <div class="col-sm-12 col-md-12 col-lg-12">
+                    <div id="outer" style="width: 100%;border-radius: 15px;">
+                        <div class="row">
+                            <div class="col-sm-4 col-md-4 col-lg-4"></div>
+                            <div class="col-sm-4 col-md-4 col-lg-4">
+                                <div id="whatToPrint4" class="p-1 pb-5 " style="width: 100%;background-color: beige;">
+    
+                                    <div class="row">
+                                        <div class="col-sm-12 col-lg-12 col-md-12">
+                                          <h6  style="text-align: center;color: rgb(27, 27, 27);">CREDIT NOTE</h6>
+                                        </div>
+                                    </div>
+    
+                                    <div class="row">
+                                        <div class="col-sm-12 col-lg-12 col-md-12">
+                                            <h6 class="mt-1" style="text-align: center;color: rgb(27, 27, 27);">{{ cmp1.cname }}</h6>
+                                        </div>
+                                    </div>
+    
+                                    <div class="row">
+                                        <div class="col-sm-12 col-lg-12 col-md-12">                            
+                                           <p  style="text-align: center;color: rgb(27, 27, 27);"> {{ cmp1.caddress }} , {{ cmp1.city }} ,{{ cmp1.state }}  </p>                           
+                                        </div>
+                                    </div>
+    
+                                  <div class="row">
+                                    <div class="col-sm-12 col-lg-12 col-md-12">
+                                        <p class="text-dark" style="font-size: small;"><span class="text-black" style="font-size:medium;">invoice to :</span> <br>
+                                        
+                                          {{ cust.firstname }} {{ cust.lastname }} <br>{{ pcrd.address }} <br><span class="text-black " style="font-size: medium;">Credit date:</span> <br> {{pcrd.credit_date|date:'d-m-Y' }} </p>
+                                         <p class="text-dark" style="font-size: small;margin-left: 70%;margin-top: -20%;"><span class="text-black" style="font-size: medium;">Credit no:</span><br>no data</p>
+        
+        
+        
+                                    </div>
+                                   
+                                   </div>
+                                  
+                                  <div class="row ">
+                                    <div class="col-sm-12 col-md-12 col-lg-12">
+                                        <table class="table-bordered mb-3" style="margin-top: 8%;">
+                                            <thead >
+                                                <tr>
+                                                    <th style="color: black;font-size: smaller;">#</th>
+                                                    <th style="width: 30rem;color: black;font-size: smaller;">Items</th>
+                                                    <th style="width: 30rem;color: black;font-size: smaller;">Hsn</th>
+                                                    <th class="text-right;" style="color: black;font-size: smaller;">Qty</th>
+                                                    <th class="text-right;" style="width:10rem;color: black;font-size: smaller;">Rate</th>
+                                                    <th class="text-right;" style="color: black;font-size: smaller;">Discount</th>
+                                                    <th class="text-right;" style="color: black;font-size: smaller;">Tax</th>
+                                                    <th class="text-right;" style="color: black;font-size: smaller;">Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for pordr in pdeb %}
+                                       <tr>
+                                        <td style="color: black;font-size: smaller;">{{ forloop.counter }}</td>
+                                        <td style="color: black;font-size: smaller;">{{ pordr.items }}</td>
+                                        <td style="color: black;font-size: smaller;">{{ pordr.hsn }}</td>
+                                        <td class="text-right" style="color: black;font-size: smaller;">{{ pordr.quantity }}</td>
+                                        <td class="text-right" style="color: black;font-size: smaller;">{{ pordr.price }}</td>
+                                        <td class="text-right" style="color: black;font-size: smaller;">{{ pordr.discount|default:0 }}</td>
+                                        <td class="text-right" style="color: black;font-size: smaller;">{{ pordr.tax }}</td>
+                                        <td class="text-right" style="color: black;font-size: smaller;">{{ pordr.total }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-sm-12 col-lg-12 col-md-12">
+                                        <table style="margin-left: 60%;">
+                                            <tr>
+                                                <td class=" text-dark" style="font-size: smaller;">Sub-Total:</td>                                       
+                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;"> {{pcrd.subtotal}}</td>
+                                            </tr>
+                                            {% if pcrd.cgst != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark" tyle="font-size: smaller;">CGST:</td>
+                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">0</td>
+                                            </tr>
+                                            {% endif %}
+                                               
+                                            {% if pcrd.sgst != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark" style="font-size: smaller;">SGST:</td>
+                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">0</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if pcrd.igst != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark" style="font-size: smaller;">IGST:</td>
+                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">0</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if pcrd.shipping_charge != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark" style="font-size: smaller;">Shipping Charge:</td>
+                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">{{ pcrd.shipping_charge}}</td>
+                                            </tr>
+                                            {% endif %}
+                                            {% if pcrd.adjustment != 0 %}
+                                            <tr>
+                                                <td class="text-right text-dark" style="font-size: smaller;">Adjustment:</td>
+                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">0</td>
+                                            </tr>
+                                            {% endif %}
+                                            <tr>
+                    
+                                                <td class="text-right text-dark" style="font-weight: bold;">Total:</td>
+                                                
+                                                <td class="text-right text-dark " style="font-weight: bold;text-align: end;font-weight: bold;">{{ pcrd.grandtotal}}</td>
+                                            </tr>
+                    
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 col-md-4 col-lg-4"></div>
+                        </div>
+        
+                    </div>
+        
+                </div>
+            </div>
+        </div>
+        
+        </div>
+        
+    
+    
+    
+
+
+  </div>
+</div>
 
 
 
@@ -1257,18 +1494,48 @@
     </div> -->
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
-    <script src="https://pingendo.com/assets/bootstrap/bootstrap-4.0.0-alpha.6.min.js"></script>
+    <!-- <script src="https://pingendo.com/assets/bootstrap/bootstrap-4.0.0-alpha.6.min.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.debug.js" ></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js" ></script>
+
+    <script>
+
+        function printSelectedArea() 
+        {
+          var selectedArea = document.getElementById("print_slip");
+          var printWindow = window.open('','PrintWindow');
+          printWindow.document.write('<html><head><title>Print Selected Area</title></head><body>' + selectedArea.innerHTML+ '</body></html>');
+          printWindow.print();
+          printWindow.close(); 
+        }
+       
+       $(function() {
+           $("#slip").click(printSelectedArea); 
+       });
+       
+       </script>
+       
 
     <script>
         function showTemplates() {
             document.getElementById('templatesToPrintSection').style.display = 'block';
             document.getElementById('details').style.display = 'none';
+            document.getElementById("print_slip").style.display='none';
+
     }
     function showDetails() {
         document.getElementById('templatesToPrintSection').style.display = 'none';
         document.getElementById('details').style.display = 'block';
+        document.getElementById("print_slip").style.display='none';
+
+    }
+    function show_slip()
+    {
+        document.getElementById("print_slip").style.display='block';
+        document.getElementById('templatesToPrintSection').style.display = 'none';
+        document.getElementById('details').style.display = 'none';
+
+
     }
     
 </script>
@@ -1283,7 +1550,7 @@
             $('#'+templateId).css('display','block');
             $('.templateToggleButtons').removeClass('active');
             $('#'+buttonId).addClass('active');
-            // $("#templatePrintButton").attr("onclick","printSection('"+templateId+"')");
+            $("#templatePrintButton").attr("onclick","printSection('"+templateId+"')");
             // $(this).addClass('active');
             // $(window).scrollTop(0); 
             document.getElementById('page-content').scrollIntoView();
@@ -1364,7 +1631,18 @@
       
     </script>
 
-
+<script>
+    function printSection(sectionId) {
+        var printContents = document.getElementById(sectionId).innerHTML;
+        var originalContents = document.body.innerHTML;
+    
+        document.body.innerHTML = printContents;
+    
+        window.print();
+    
+        document.body.innerHTML = originalContents;
+    }
+    </script>
 
 
 {% endblock %}

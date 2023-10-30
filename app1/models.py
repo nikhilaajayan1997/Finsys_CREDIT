@@ -52,6 +52,7 @@ class customer(models.Model):
     lastname = models.CharField(max_length=100)
     company = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
+    placesupply = models.CharField(max_length=100,null=True,blank=True)
     gsttype = models.CharField(max_length=100, null=True)
     gstin = models.CharField(max_length=100, default='')
     panno = models.CharField(max_length=100, null=True)
@@ -1686,15 +1687,29 @@ class salescreditnote(models.Model):
     customer = models.CharField(max_length=100,null=True)
     address = models.TextField(null=True)
     creditdate = models.DateField(null=True)
+    reference_number=models.TextField(max_length=100,null=True,blank=True)
     email = models.CharField(max_length=100,null=True)
     supply = models.CharField(max_length=150,null=True)
     billno = models.CharField(max_length=100,null=True)
     subtotal = models.CharField(max_length=100,null=True)
+    cgst=models.TextField(max_length=100,null=True,blank=True)
+    sgst=models.TextField(max_length=100,null=True,blank=True)
+    igst=models.TextField(max_length=100,null=True,blank=True)
     shipping_charge = models.CharField(max_length=100,null=True,blank=True)
+    adjustment = models.CharField(max_length=100,null=True,blank=True)
     taxamount = models.CharField(max_length=100,null=True)
     grandtotal = models.CharField(max_length=100,null=True)
     description = models.CharField(max_length=255,null=True)
     status=models.CharField(max_length=100,null=True,blank=True)
+    file=models.FileField(upload_to='crdit_note/',default="default.png",null=True,blank=True)
+    balance=models.TextField(max_length=100,null=True,blank=True)
+    payment_method=models.TextField(max_length=100,null=True,blank=True)
+    cheque_no=models.TextField(max_length=100,null=True,blank=True)
+    acc_no=models.TextField(max_length=100,null=True,blank=True)
+    upi_id=models.TextField(max_length=100,null=True,blank=True)
+    bank_id=models.TextField(max_length=100,null=True,blank=True)
+
+
 
 class salescreditnote1(models.Model):
     scredit = models.ForeignKey(salescreditnote, on_delete=models.CASCADE,null=True)
@@ -2228,8 +2243,7 @@ class e_waybills(models.Model):
     shipping_charge = models.FloatField(null=True,blank=True)
     adjustment = models.FloatField(default=0,null=True,blank=True)
     grand_total = models.FloatField(null=True,blank=True)
-    # paid_amount= models.FloatField(default=0,max_length=100,null=True)
-    # balance = models.FloatField(max_length=100,null=True)
+    
     note = models.TextField(null=True)
     file = models.FileField(upload_to='purchase/ewbill',default="default.png")
 

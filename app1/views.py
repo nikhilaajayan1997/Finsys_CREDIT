@@ -3,6 +3,7 @@ from curses.ascii import HT
 from http.client import HTTPResponse
 from multiprocessing import context
 from django.db.models import Avg,Max,Min,Sum
+from django.db import connection
 import os
 from django.conf import settings
 from django.core.mail import send_mail
@@ -37816,6 +37817,7 @@ def credit_note_filter_save(request):
         p['cust']=cust
     return render(request,'app1/credit_note.html',{'cmp1':cmp1,'pdebit':pdebit})
 
+
 def credit_note(request):
     cmp1 = company.objects.get(id=request.session['uid'])
     pdebit = salescreditnote.objects.filter(cid=cmp1).values() 
@@ -37823,6 +37825,9 @@ def credit_note(request):
         cust = " " . join(p['customer'].split(" ")[1:])
         p['cust'] = cust
     return render(request,'app1/credit_note.html',{'cmp1': cmp1,'pdebit':pdebit})
+
+
+
 
 def addpurchasecredit(request):
     if 'uid' in request.session:
@@ -37833,10 +37838,23 @@ def addpurchasecredit(request):
         cmp1 = company.objects.get(id=request.session['uid'])
         vndr = customer.objects.filter(cid=cmp1)  
         pbill = purchasebill.objects.all()  
-        item = itemtable.objects.filter(cid=cmp1) 
-        context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill} 
+        item = itemtable.objects.filter(cid=cmp1)
+        banks=bankings_G.objects.all() 
+        # try:
+        model_meta = salescreditnote._meta
+        pk_name = model_meta.pk.name
+        table_name = model_meta.db_table
+        with connection.cursor() as cursor:
+                cursor.execute(f"SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME = %s", [table_name])
+                next_id = cursor.fetchone()[0]
+        # except:
+        #     print("error occured")
+    
+        context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':next_id,'banks':banks} 
         return render(request,'app1/add_credit_note.html',context)
     return redirect('credit_note') 
+
+
     
 def getcustdata(request):
     if 'uid' in request.session:
@@ -37868,6 +37886,26 @@ def getcustdata(request):
             list.append(dict)
         return JsonResponse(json.dumps(list), content_type="application/json", safe=False)
     return redirect('getvendordata')
+
+
+def attach_credit_note_file(request,pk):
+    cmp1 = company.objects.get(id=request.session['uid'])
+    s_credit = salescreditnote.objects.get(screditid=pk,cid=cmp1)
+
+    if request.method == 'POST':
+        if len(request.FILES) != 0:
+           s_credit.file=request.FILES.get('file')
+           s_credit.save()
+    return redirect('viewcredit',s_credit.screditid)
+
+def creditnotereport(request):
+    cmp1 = company.objects.get(id=request.session['uid'])
+    pdebit = salescreditnote.objects.filter(cid=cmp1).values() 
+    for p in pdebit:
+        cust = " " . join(p['customer'].split(" ")[1:])
+        p['cust'] = cust
+    return render(request,'app1/credit_note_report.html',{'cmp1': cmp1,'pdebit':pdebit})
+
 
 def create_credit(request):
     if 'uid' in request.session:
@@ -38062,6 +38100,14 @@ def render_pdf_credit(request,id):
     if pisa_status.err:
        return HttpResponse('We had some errors <pre>' + html + '</pre>')
     return response
+
+def credit_change_status(request,pk):
+    cmp1 = company.objects.get(id=request.session['uid'])
+    cre_obj=salescreditnote.objects.get(screditid=pk,cid=cmp1)
+    cre_obj.status='Save'
+    cre_obj.save()
+    return redirect('credit_note')
+
 
 
 def editcreditnote(request, id):
@@ -38324,7 +38370,7 @@ def customers21(request):
              
             cust = customer(title=request.POST.get('title'), firstname=firstname,
                             lastname=lastname, company=request.POST.get('company_name'),
-                            location=request.POST.get('location'), gsttype=request.POST.get('gsttype'),
+                            location=request.POST.get('location'),placesupply=request.POST.get('placesupply'),gsttype=request.POST.get('gsttype'),
                             gstin=request.POST.get('gstin'), panno=request.POST.get('panno'),
                             email=request.POST.get('email'),website=request.POST.get('website'),
                             mobile=request.POST.get('mobile'),street=request.POST.get('street'),
@@ -40737,17 +40783,48 @@ def cust_details(request):
             return redirect('/')
         comp = company.objects.get(id=request.session['uid'])
         id = request.POST.get('id').split(" ")[0]
-
+        name=request.POST.get('id')
+        name2=name.split()[1]
+        name3=name.split()[2]
+        print(name2)
+        print(name3)
+        name1=name2+" "+name3
+        print(name1)
         cust = customer.objects.get(customerid = id, cid = comp)
+        # credit_name=salescreditnote.objects.get(customer=name)
         email = cust.email
         street = cust.street
         city = cust.city
         state = cust.state
         pincode = cust.pincode
         country = cust.country
+        place_supply=cust.placesupply 
+        gst_treat=cust.gsttype
+        panno=cust.panno
+        gstno=cust.gstin
+        if invoice.objects.filter(customername=name,cid = comp).exists() or recinvoice.objects.filter(customername=name1,cid = comp).exists():
+            if invoice.objects.filter(customername=name,cid = comp).exists() and recinvoice.objects.filter(customername=name1,cid = comp).exists():
+                inv_obj=invoice.objects.get(customername=name,cid = comp)
+                inv_id=inv_obj.invoiceno
+                recinv_obj=recinvoice.objects.get(customername=name1,cid = comp)
+                recinv_id=recinv_obj.recinvoiceno
+                return JsonResponse({'email': email,'street': street,'city':city,'pincode': pincode,"state": state,'country' : country,'place_supply':place_supply,'inv_id':inv_id,'recinv_id':recinv_id,'gst_treat':gst_treat,'panno':panno,'gstno':gstno},safe=False)
+            elif invoice.objects.filter(customername=name,cid = comp).exists():
+                inv_obj=invoice.objects.get(customername=name,cid = comp)
+                inv_id=inv_obj.invoiceno
+                return JsonResponse({'email': email,'street': street,'city':city,'pincode': pincode,"state": state,'country' : country,'place_supply':place_supply,'inv_id':inv_id,'gst_treat':gst_treat,'panno':panno,'gstno':gstno},safe=False)
+            elif recinvoice.objects.filter(customername=name1,cid = comp).exists():
+                recinv_obj=recinvoice.objects.get(customername=name1,cid = comp)
+                recinv_id=recinv_obj.recinvoiceno
+                return JsonResponse({'email': email,'street': street,'city':city,'pincode': pincode,"state": state,'country' : country,'place_supply':place_supply,'recinv_id':recinv_id,'gst_treat':gst_treat,'panno':panno,'gstno':gstno},safe=False)
+        else:
+            return JsonResponse({'email': email,'street': street,'city':city,'pincode': pincode,"state": state,'country' : country,'place_supply':place_supply,'gst_treat':gst_treat,'panno':panno,'gstno':gstno},safe=False)
+
+
+
 
     
-    return JsonResponse({'email': email,'street': street,'city':city,'pincode': pincode,"state": state,'country' : country},safe=False)
+    # return JsonResponse({'email': email,'street': street,'city':city,'pincode': pincode,"state": state,'country' : country,'place_supply':place_supply,'gst_treat':gst_treat,'panno':panno,'gstno':gstno},safe=False)
 
 # (22-07-23) Nithya--- customer, invoices, sales order, credit note,estimate (correction)--
 

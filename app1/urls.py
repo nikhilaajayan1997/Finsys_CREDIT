@@ -823,6 +823,9 @@ urlpatterns = [
     path('create_credit_save/',views.create_credit_save,name='create_credit_save'),
     path('credit_note_filter_draft',views.credit_note_filter_draft,name='credit_note_filter_draft'),
     path('credit_note_filter_save',views.credit_note_filter_save,name='credit_note_filter_save'),
+    path('credit_change_status/<int:pk>',views.credit_change_status,name='credit_change_status'),
+    path('attach_credit_note_file/<int:pk>',views.attach_credit_note_file,name='attach_credit_note_file'),
+    path('creditnotereport',views.creditnotereport,name='creditnotereport'),
 
 
     path('bnk_disables/<int:pk>', views.bnk_disables, name='bnk_disables'),

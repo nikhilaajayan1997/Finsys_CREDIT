@@ -4,6 +4,9 @@
 <script src="https://kit.fontawesome.com/a076d05399.js" ></script>
 <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet"> -->
 
+
+
+
 <form action="" method="post" class="needs-validation" id="forms" novalidate>
 {% csrf_token %}
     <div class="page-content">
@@ -51,9 +54,19 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-5 mt-3">
+                                    <label for="validationCustom02">Gst Treatemnt</label>
+                                    <input type="text" class="form-control" name="gst_treat" id="gst_treat">
+                                </div>
+                                <div class="col-md-5 mt-3" >
+                                    <label for="validationCustom02" id="gst_no_label" style="display: none;">GST No</label>
+                                    <input type="text" class="form-control" name="gst_no" id="gst_no" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-5 mt-3">
                                     <label>Place of supply</label>&nbsp;
                                     <select type="text" class="form-control" id="plosu" name="supply"  >
-                                        <option value="{{ cmp1.state }}" selected> {{ cmp1.state }}</option>
+                                        <!-- <option value="{{ cmp1.state }}" selected> {{ cmp1.state }}</option> -->
                                         <option value="Andaman and Nicobar Islads">Andaman and Nicobar Islads</option>
                                         <option value="Andhra Predhesh">Andhra Predhesh</option>
                                         <option value="Arunachal Predesh">Arunachal Predesh</option>
@@ -97,12 +110,23 @@
                                 <div class="col-md-5 mt-3">
                                     <label for="validationCustom02">Invoice Number</label>
                                     <select name="billno" id="inv_no" class="form-control">
-                                        <option selected >Select Invoice</option>
+                                        <option>Select Invoice</option>
                                         
                                         
                                     </select>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-5 mt-3">
+                                    <label for="validationCustom02">Reference Number</label>
+                                    <input type="number" class="form-control" name="referenceNumber" id="referenceNumber" value="{{next_id}}" readonly>
+                                </div>
+                                <div class="col-md-5 mt-3" >
+                                    <label for="validationCustom02" id="credit_note_no" name="credit_note_no">Credit Note Number</label>
+                                    <input type="text" class="form-control" name="credit_no" id="credit_no">
+                                </div>
+                            </div>
+                            
                         </div>
                         <div class="col-md-4">
                             <div class="row" style="margin-top: 20%">
@@ -116,6 +140,34 @@
                                     <input type="text" name="creditamount" id="baldue" placeholder='0.00' class="form-control"
                                     readonly style="font-size: 50px; background-color: #243e54; border: 0px; color: white;">
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12 col-sm-12">
+                            <div class="row">
+                                <div class="col-md-3 mt-3">
+                                    <label for="validationCustom02">Payment Method</label>
+                                    <!-- <input type="number" class="form-control" style="width: 110%;" name="referenceNumber" id="referenceNumber" value="{{next_id}}" readonly> -->
+                                    <select name="select_payment" id="select_payment" style="width: 110%;"  class="form-control">
+                                        <option value="no_option">select</option>
+                                        <option value="Cash">Cash</option>
+                                        <option value="Cheque">Cheque</option>
+                                        <option value="UPI">UPI</option>
+                                        {% for i in banks%}
+                                        <option value="{{ i.bankname }}">{{ i.bankname }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mt-3" >
+                                    <label for="validationCustom02" id="acc_no_label"  style="margin-left: 11%;display: none;" name="credit_note_no">Ac/Number</label>
+                                    <input type="text" class="form-control" id="acc_no" name="acc_no" style="margin-left: 11%;width: 112%;display: none;" readonly>
+                                    <label for="validationCustom02" id="cheque_no_label" style="margin-left: 11%;display: none;" >Cheque Number</label>
+                                    <input type="text" class="form-control" style="margin-left: 11%;width: 112%;display: none;" name="cheque_no" id="cheque_no" >
+                                    <label for="validationCustom02" id="upi_id_label" style="margin-left: 11%;display: none;" name="credit_note_no">UPI Id</label>
+                                    <input type="text" class="form-control" style="margin-left: 11%;width: 112%;display: none;" name="upi_id" id="upi_id" >
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -363,7 +415,51 @@
                                     style="background-color: #2f516f;color: white;">
                             <div class="valid-feedback">Looks good!</div>
                         </div>
-                        <div class="col-md-4 mt-3"></div>
+                        <div class="col-md-4 mt-3">
+                            <label for="location">Place Of Supply</label>
+                            <select type="text" class="form-control" id="placesupply" name="placesupply" >
+                                <option value="">Select</option>
+                                <option value="Andaman and Nicobar Islads">Andaman and Nicobar Islads</option>
+                                <option value="Andhra Predhesh">Andhra Predhesh</option>
+                                <option value="Arunachal Predesh">Arunachal Predesh</option>
+                                <option value="Assam">Assam</option>
+                                <option value="Bihar">Bihar</option>
+                                <option value="Chandigarh">Chandigarh</option>
+                                <option value="Chhattisgarh">Chhattisgarh</option>
+                                <option value="Dadra and Nagar Haveli">Dadra and Nagar Haveli</option>
+                                <option value="Damn anad Diu">Damn and Diu</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Goa">Goa</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Haryana">Haryana</option>
+                                <option value="Himachal Predesh">Himachal Predesh</option>
+                                <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                                <option value="Jharkhand">Jharkhand</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Ladakh">Ladakh</option>
+                                <option value="Lakshadweep">Lakshadweep</option>
+                                <option value="Madhya Predesh">Madhya Predesh</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Manipur">Manipur</option>
+                                <option value="Meghalaya">Meghalaya</option>
+                                <option value="Mizoram">Mizoram</option>
+                                <option value="Nagaland">Nagaland</option>
+                                <option value="Odisha">Odisha</option>
+                                <option value="Puducherry">Puducherry</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Sikkim">Sikkim</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Telangana">Telangana</option>
+                                <option value="Tripura">Tripura</option>
+                                <option value="Uttar Predesh">Uttar Predesh</option>
+                                <option value="Uttarakhand">Uttarakhand</option>
+                                <option value="West Bengal">West Bengal</option>
+                                <option value="Other Territory">Other Territory</option>
+                            </select>
+                            
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4 mt-3">
@@ -1478,6 +1574,7 @@
                     last_name : $('#lastname').val(),
                     company_name : $("#company").val(),
                     location : $("#location").val(),
+                    placesupply:$("#placesupply").val(),
                     openbalance : $("#openbalance").val(),
                     email : $("#email").val(),
                     website :$("#website").val(),
@@ -1639,6 +1736,45 @@
                             console.log(data.email);
                             document.getElementById('cred_email').value = data.email;
                             document.getElementById('mailaddr').value = data.street + '\n' + data.city + '\n' + data.state + '\n' + data.country  + '\n' + data.pincode ;
+                            document.getElementById('plosu').value=data.place_supply;
+                            document.getElementById('gst_treat').value=data.gst_treat
+                            $('#inv_no').empty();
+                            if(data.gstno)
+                            {
+                                document.getElementById('gst_no').style.display='block';
+                                document.getElementById('gst_no_label').style.display='block';
+                                $('#gst_no').val(data.gstno);
+
+                            }
+
+                            if (data.inv_id) {
+                                $('#inv_no').append($('<option>', {
+                            value: data.inv_id,
+                            text: data.inv_id
+                        }));
+
+                        }
+                        else{
+                            $('#inv_no').append($('<option>', {
+                            value: 'invoice not available',
+                            text: 'invoice not available'
+                        }));
+                        }
+                        if (data.recinv_id) {
+                                $('#inv_no').append($('<option>', {
+                            value: data.recinv_id,
+                            text: data.recinv_id
+                        }));
+
+                        }
+                        else{
+                            $('#inv_no').append($('<option>', {
+                            value: 'recuring invoice not available',
+                            text: 'recuring invoice not available'
+                        }));
+                        }
+                            
+
                         }
                     });
                 });
