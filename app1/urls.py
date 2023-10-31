@@ -826,6 +826,8 @@ urlpatterns = [
     path('credit_change_status/<int:pk>',views.credit_change_status,name='credit_change_status'),
     path('attach_credit_note_file/<int:pk>',views.attach_credit_note_file,name='attach_credit_note_file'),
     path('creditnotereport',views.creditnotereport,name='creditnotereport'),
+    path('get_account_no',views.get_account_no,name='get_account_no'),
+    path('itemdata_qty',views.itemdata_qty,name='itemdata_qty'),
 
 
     path('bnk_disables/<int:pk>', views.bnk_disables, name='bnk_disables'),

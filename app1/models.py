@@ -71,24 +71,16 @@ class customer(models.Model):
     shipcountry = models.CharField(max_length=100, null=True)
     opening_balance = models.FloatField(null=True)
     opening_balance_due = models.FloatField(null=True)
+    credit_limit = models.FloatField(null=True)
     date = models.DateField(null=True)
     opnbalance_status = models.CharField(max_length=100,default='Default')
-    
-
     customer_status = (
         ('Active','Active'),
         ('Inactive','Inactive'),
-       
-
     )
-    
     status =models.CharField(max_length=150,choices=customer_status,default='Active')
-
     receivables  = models.FloatField(null=True)
-
     file = models.FileField(upload_to='Customer',default="default.jpg")
-
-
 
     class meta:
         db_table = "customer"
@@ -1683,7 +1675,7 @@ class banking_payment(models.Model):
 class salescreditnote(models.Model):
     screditid = models.AutoField(('pdid'), primary_key=True)
     cid = models.ForeignKey(company, on_delete=models.CASCADE,null=True)
-    credit_no = models.IntegerField(default=1000)
+    credit_no = models.TextField(max_length=100,null=True,blank=True)
     customer = models.CharField(max_length=100,null=True)
     address = models.TextField(null=True)
     creditdate = models.DateField(null=True)

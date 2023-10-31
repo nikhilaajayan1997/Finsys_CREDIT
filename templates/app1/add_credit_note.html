@@ -7,7 +7,7 @@
 
 
 
-<form action="" method="post" class="needs-validation" id="forms" novalidate>
+<form action="{% url 'create_credit' %}" method="post" class="needs-validation" id="forms" novalidate>
 {% csrf_token %}
     <div class="page-content">
             <!--breadcrumb-->
@@ -122,7 +122,7 @@
                                     <input type="number" class="form-control" name="referenceNumber" id="referenceNumber" value="{{next_id}}" readonly>
                                 </div>
                                 <div class="col-md-5 mt-3" >
-                                    <label for="validationCustom02" id="credit_note_no" name="credit_note_no">Credit Note Number</label>
+                                    <label for="validationCustom02" id="credit_note_no" >Credit Note Number</label>
                                     <input type="text" class="form-control" name="credit_no" id="credit_no">
                                 </div>
                             </div>
@@ -149,7 +149,7 @@
                                 <div class="col-md-3 mt-3">
                                     <label for="validationCustom02">Payment Method</label>
                                     <!-- <input type="number" class="form-control" style="width: 110%;" name="referenceNumber" id="referenceNumber" value="{{next_id}}" readonly> -->
-                                    <select name="select_payment" id="select_payment" style="width: 110%;"  class="form-control">
+                                    <select name="select_payment" id="select_payment" style="width: 110%;" onclick="show_fields()"  class="form-control">
                                         <option value="no_option">select</option>
                                         <option value="Cash">Cash</option>
                                         <option value="Cheque">Cheque</option>
@@ -160,8 +160,8 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3 mt-3" >
-                                    <label for="validationCustom02" id="acc_no_label"  style="margin-left: 11%;display: none;" name="credit_note_no">Ac/Number</label>
-                                    <input type="text" class="form-control" id="acc_no" name="acc_no" style="margin-left: 11%;width: 112%;display: none;" readonly>
+                                    <label for="validationCustom02" id="acc_no_label"  style="margin-left: 11%;display: none;" >Ac/Number</label>
+                                    <input type="text" class="form-control" id="acc_no" name="acc_no" style="margin-left: 11%;width: 112%;display: none;" >
                                     <label for="validationCustom02" id="cheque_no_label" style="margin-left: 11%;display: none;" >Cheque Number</label>
                                     <input type="text" class="form-control" style="margin-left: 11%;width: 112%;display: none;" name="cheque_no" id="cheque_no" >
                                     <label for="validationCustom02" id="upi_id_label" style="margin-left: 11%;display: none;" name="credit_note_no">UPI Id</label>
@@ -209,6 +209,7 @@
                                                 </select>
                                                 <a class="btn btn-outline-secondary ml-1" role="button" data-target="#newitem" data-toggle="modal">+</a> 
                                             </div>
+                                            
                                         </td>
                                         <td>
                                             <input type="text" name='hsn[]' id="hsn1" placeholder='HSN'
@@ -266,8 +267,12 @@
                                     </tr>
                                     </tbody>
                                     <tr>
-                                        <td style="border: none;"><a class="btn btn-outline-secondary ml-1" title="Add Row" role="button" id="addrow" >+</a></td>
+                                        <td style="border: none;border: transparent;">
+                                            <a class="btn btn-outline-secondary ml-1" title="Add Row" role="button" id="addrow" >+</a>
+                                            
+                                        </td>
                                     </tr>
+                                    <label for="" id="item_label" ></label>
                                 </table>
                             </div>
                         </div>
@@ -290,7 +295,7 @@
                                 <div class="row container-fluid p-2 m-0" id="igst1">
                                     <div class="col-sm-4 mt-2"><label for="a" class="text-center">IGST</label></div>
                                     <div class="col-sm-1 mt-2">:</div>
-                                    <div class="col-sm-7 mt-2"><input type="number" name='igst' step="any" id="igst" placeholder=0 
+                                    <div class="col-sm-7 mt-2"><input type="number" name='igst' step="any" id="igst" value="0" placeholder=0 
                                         class="form-control"/>
                                     </div>
                                     <div class="col-sm-4 m-0 p-0"></div>
@@ -298,7 +303,7 @@
                                 <div class="row container-fluid p-2 m-0" style="display: none;" id="cgst1">
                                     <div class="col-sm-4 mt-2"><label for="a" class="text-center">CGST</label></div>
                                     <div class="col-sm-1 mt-2">:</div>
-                                    <div class="col-sm-7 mt-2"><input type="number" name='cgst' step="any" id="cgst" placeholder=0 
+                                    <div class="col-sm-7 mt-2"><input type="number" name='cgst' step="any" value="0" id="cgst" placeholder=0 
                                         class="form-control"/>
                                     </div>
                                     <div class="col-sm-4 m-0 p-0"></div>
@@ -306,7 +311,7 @@
                                 <div class="row container-fluid p-2 m-0" style="display: none;" id="sgst1">
                                     <div class="col-sm-4 mt-2"><label for="a" class="text-center">SGST</label></div>
                                     <div class="col-sm-1 mt-2">:</div>
-                                    <div class="col-sm-7 mt-2"><input type="number" name='sgst' step="any" id="sgst" placeholder=0 
+                                    <div class="col-sm-7 mt-2"><input type="number" name='sgst' step="any" value="0" id="sgst" placeholder=0 
                                         class="form-control"/>
                                     </div>
                                     <div class="col-sm-4 m-0 p-0"></div>
@@ -343,6 +348,23 @@
                                     </div>
                                     <div class="col-sm-4 m-0 p-0"></div>
                                 </div>
+                                <div class="row container-fluid p-2 m-0">
+                                    <div class="col-sm-4 mt-2"><label for="a" class="text-center">Paid</label></div>
+                                    <div class="col-sm-1 mt-2">:</div>
+                                    <div class="col-sm-7 mt-2"><input type="number" name='paid' id="paid" value="0.00" 
+                                        class="form-control"/>
+                                    </div>
+                                    <div class="col-sm-4 m-0 p-0"></div>
+                                </div>
+                                <div class="row container-fluid p-2 m-0">
+                                    <div class="col-sm-4 mt-2"><label for="a" class="text-center">Balance</label></div>
+                                    <div class="col-sm-1 mt-2">:</div>
+                                    <div class="col-sm-7 mt-2"><input type="number" name='balance' id="balance" placeholder='0.00' readonly 
+                                        class="form-control"/>
+                                    </div>
+                                    <div class="col-sm-4 m-0 p-0"></div>
+                                </div>
+                                
                             </div>
                             
                         </div>
@@ -350,13 +372,12 @@
                     <div class="row mt-4 mb-4">
                         <div class="col-md-6"></div>
                         <div class="col-md-3 mt-3 mb-4">
-                            <!-- <button class="btn btn-outline-info w-100 text-light rounded-pill" type="submit">Save Credit Note</button> -->
-                            <input type="submit"  class="btn btn-outline-info w-100 text-light rounded-pill"  
-                onclick="saveAsDraftDialog()" value="Draft">
+                            <button type="submit" name="bt" class="btn btn-outline-info w-100 text-light rounded-pill"  
+                 value="Draft">Draft</button>
                         </div>
                         <div class="col-md-3 mt-3 mb-4">
-                            <input type="submit"  class="btn btn-outline-info w-100 text-light rounded-pill"  
-                onclick="saveDialog()" value="Save">
+                            <button type="submit" name="bt"  class="btn btn-outline-info w-100 text-light rounded-pill"  
+                 value="Save">Save</button>
                         </div>
                     </div>
                 </div>
@@ -514,15 +535,26 @@
                         </div>
 
                         <div class="col-md-4 mt-3" >
-                          <div>
-                              <label for="openbalance">OPENING BALANCE</label>
-                              <input type="text" class="form-control" id="openbalance" value=""  name="openbalance"
+                            <label for="openbalance">OPENING BALANCE</label>
+                          <div class="d-flex">
+                              <select name="bal" id="bal" class="form-select text-white pl-1" style="background-color: #243e54; width: 25%; border-radius: 5px;">
+                                <option value="credit">Credit</option>
+                                <option value="debit">Debit</option>
+                            </select>
+                              <input type="number" class="form-control" id="openbalance" value=""  name="openbalance"
+                                     style="background-color: #2f516f;color: white;">
                                      
-                                     style="background-color: #2f516f;color: white;"
-                                     >
                               <div class="text-danger m-2" ></div>
                           </div>
                       </div>
+                      <div class="col-md-4 mt-3" >
+                        <div>
+                            <label for="openbalance">Credit Limit</label>
+                            <input type="number" class="form-control" id="crd_lmt"  name="crd_lmt"
+                                style="background-color: #43596c;color: white;">
+                            <div class="text-danger m-2" ></div>
+                        </div>
+                    </div>
  
                     </div>
  
@@ -1151,21 +1183,86 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+
     <script>
+        $(document).on('change',function(){
+            var paid_off=$('#paid').val();
+           var total=$('#grandtotal').val();
+           var bal=total-paid_off;
+           $('#balance').val(bal);
+            
+        })
+    </script>
+
+    <script>
+
         
 
-            function saveAsDraftDialog() 
-            {
+    // <script>
+        
 
-            var frm = document.getElementById("forms");
-            frm.action = ("{% url 'create_credit'%}")
-            }
-            function saveDialog() 
-            {
+    //         function saveAsDraftDialog() 
+    //         {
 
-            var frm = document.getElementById("forms");
-            frm.action = ("{% url 'create_credit_save'%}")
+    //         var frm = document.getElementById("forms");
+    //         frm.action = ("{% url 'create_credit' %}")
+    //         }
+    //         function saveDialog() 
+    //         {
+
+    //         var frm = document.getElementById("forms");
+    //         frm.action = ("{% url 'create_credit_save' %}")
+    //         }
+    // </script>
+    <script>
+        function show_fields()
+        {
+            var option=document.getElementById('select_payment').value;
+            if(option == 'Cash'){
+                document.getElementById('acc_no_label').style.display='none';
+                document.getElementById('acc_no').style.display='none';
+                document.getElementById('cheque_no_label').style.display='none';
+                document.getElementById('cheque_no').style.display='none';
+                document.getElementById('upi_id_label').style.display='none';
+                document.getElementById('upi_id').style.display='none';
             }
+            else if(option == 'Cheque'){
+                document.getElementById('acc_no_label').style.display='none';
+                document.getElementById('acc_no').style.display='none';
+                document.getElementById('cheque_no_label').style.display='block';
+                document.getElementById('cheque_no').style.display='block';
+                document.getElementById('upi_id_label').style.display='none';
+                document.getElementById('upi_id').style.display='none';
+
+            }
+            else if(option == 'UPI'){
+                document.getElementById('acc_no_label').style.display='none';
+                document.getElementById('acc_no').style.display='none';
+                document.getElementById('cheque_no_label').style.display='none';
+                document.getElementById('cheque_no').style.display='none';
+                document.getElementById('upi_id_label').style.display='block';
+                document.getElementById('upi_id').style.display='block';
+            }
+            else if(option == 'no_option'){
+                document.getElementById('acc_no_label').style.display='none';
+                document.getElementById('acc_no').style.display='none';
+                document.getElementById('cheque_no_label').style.display='none';
+                document.getElementById('cheque_no').style.display='none';
+                document.getElementById('upi_id_label').style.display='none';
+                document.getElementById('upi_id').style.display='none';
+            }
+            else
+            {
+                
+                document.getElementById('acc_no_label').style.display='block';
+                document.getElementById('acc_no').style.display='block';
+                document.getElementById('cheque_no_label').style.display='none';
+                document.getElementById('cheque_no').style.display='none';
+                document.getElementById('upi_id_label').style.display='none';
+                document.getElementById('upi_id').style.display='none';
+            }
+        }
     </script>
     <script>
 
@@ -1395,11 +1492,13 @@
             $(document).on('change', '.product',function(){ 
                 
                 var n = $(this).attr("id").slice(7);
+                var x=$('#inv_no').val();
                 $.ajax({
                 url: "{% url 'itemdata' %}",
                 type : 'GET',
                 data:{
                     id : $(this).val(),
+                    invoice_no:$('#inv_no').val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
                 
@@ -1409,18 +1508,68 @@
                     data3 = response.price
                     data4 = response.gst
                     data5 = response.sgst
+                    data6=response.mesg
+                    data7=response.itm
 
                     console.log(data)
                     
                     document.getElementById('hsn'+n).value = data;
                     document.getElementById('qtyspan'+n).innerHTML = data2;
                     document.getElementById('unit'+n).value = data3;
+                     if(data6 == 'different item')
+                    {
+                        document.getElementById('item_label').text=""
+                        document.getElementById('item_label').style.color="red"
+                        document.getElementById('item_label').innerHTML=data6;
+
+
+                    }
+                    
 
                 },
                 });
                 
 
             });
+
+            $(document).on('change','.qty',function(){ 
+                var n = $(this).attr("id").slice(3);
+                // var n1=$('#hsn').attr("id").slice(3);
+                // var x=$('#inv_no').val();
+                $.ajax({
+                url: "{% url 'itemdata_qty' %}",
+                type : 'GET',
+                data:{
+                    id1 : $(this).val(),
+                    id:$('#hsn'+n).val(),
+                    invoice_no:$('#inv_no').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                
+                success: function(response) {
+                    data6=response.msg
+                     if(data6 == 'different quantity selected')
+                    {
+                        document.getElementById('item_label').text=""
+
+                        document.getElementById('item_label').style.color="red"
+                        document.getElementById('item_label').innerHTML=data6;
+
+
+                    }
+                    
+
+                },
+                });
+                
+
+            });
+
+
+
+
+
+
 
             $(document).on('click','.remove_row',function(){
                 var row_id = $(this).attr("id");
@@ -1566,9 +1715,7 @@
     
                 type : 'POST',
                 url:"{% url 'customers21' %}",
-
                 data:{
-                    
                     title : $('#title').val(),
                     first_name : $('#firstname').val(),
                     last_name : $('#lastname').val(),
@@ -1576,6 +1723,7 @@
                     location : $("#location").val(),
                     placesupply:$("#placesupply").val(),
                     openbalance : $("#openbalance").val(),
+                    credit_limit : $("#crd_lmt").val(),
                     email : $("#email").val(),
                     website :$("#website").val(),
                     mobile :$("#mobile").val(),
@@ -1592,12 +1740,8 @@
                     gsttype :$("#gsttype").val(),
                     gstin :$("#gstin").val(),
                     panno :$("#panno").val(),
-
-                  
                     csrfmiddlewaretoken: '{{ csrf_token }}'
-                    
                 },
-                
                 success: function(response) {
                     console.log("success")
                     document.getElementById("modalCustomer").reset();
@@ -1607,8 +1751,9 @@
         });
 
 
-        function reloadCustomer() {
 
+        
+        function reloadCustomer() {
             $.ajax({
                 url: "{% url 'cust_dropdown' %}",
                 type: "GET",
@@ -1718,8 +1863,28 @@
             }
         
 
+             $(document).ready(function(){
+                $('#select_payment').on('change',function(){
+                    $.ajax({
+                        type:'POST',
+                        url:"{% url 'get_account_no' %}",
+                        data:{
+                            id:$('#select_payment').val(),
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+
+                        },
+                        success:function(data){
+                            document.getElementById('acc_no').value = data.accno;
+
+                        }
+                    })
+                })
+            })
+
+            
 
 
+           
             $(document).ready(function () {
                 $('#customer').on('change', function() {
                     console.log($('#customer').val())
@@ -1750,26 +1915,26 @@
                             if (data.inv_id) {
                                 $('#inv_no').append($('<option>', {
                             value: data.inv_id,
-                            text: data.inv_id
+                            text:'Invoice'+" "+ data.inv_id
                         }));
 
                         }
                         else{
                             $('#inv_no').append($('<option>', {
-                            value: 'invoice not available',
+                            value: '0',
                             text: 'invoice not available'
                         }));
                         }
                         if (data.recinv_id) {
                                 $('#inv_no').append($('<option>', {
                             value: data.recinv_id,
-                            text: data.recinv_id
+                            text:'Re.Invoice'+" "+data.recinv_id
                         }));
 
                         }
                         else{
                             $('#inv_no').append($('<option>', {
-                            value: 'recuring invoice not available',
+                            value: '0',
                             text: 'recuring invoice not available'
                         }));
                         }
@@ -2045,5 +2210,32 @@
 
        
         
+    </script>
+    <script>
+        $(document).on('change', '#openbalance',function () {
+            openbal = $("#openbalance").val()
+            if($('#bal').val()=='credit'){
+                if(openbal.slice(0,1) != '-'){
+                    document.getElementById("openbalance").value = "-"+openbal
+                }else{
+                    document.getElementById("openbalance").value = openbal
+                }
+            }else{
+                document.getElementById("openbalance").value = openbal
+            }
+        });
+    
+        $(document).on('change', '#bal',function () {
+            openbal = $("#openbalance").val()
+            if(openbal != ""){
+                if($('#bal').val()=='credit'){
+                    openbal = $("#openbalance").val()
+                    document.getElementById("openbalance").value = "-"+openbal
+                }else{
+                    openbal = $("#openbalance").val()
+                    document.getElementById("openbalance").value = openbal.slice(1,)
+                }
+            }
+        });
     </script>
 {% endblock %}

@@ -33916,6 +33916,33 @@ def getvendordata(request):
         return JsonResponse(json.dumps(list), content_type="application/json", safe=False)
     return redirect('getvendordata')
 
+
+def itemdata_qty(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        cmp1 = company.objects.get(id=request.session['uid'])
+        id = request.GET.get('id')
+        id1 = request.GET.get('id1')
+        invoice_no=request.GET.get('invoice_no')
+        hsn = id
+        quantity=id1
+        if invoice.objects.filter(invoiceno=invoice_no).exists():
+            invid=invoice.objects.get(invoiceno=invoice_no)
+            if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
+                itm_qty=invoice_item.objects.get(invoice=invid.invoiceid,hsn=hsn)
+                if int(quantity) > itm_qty.qty:
+                    msg="different quantity selected"
+                    return JsonResponse({'msg':msg})
+                else:
+                    msg="same quantity"
+                    return JsonResponse({'msg':msg})
+            else:
+                return JsonResponse({'msg':"no message"})
+
+
 def itemdata(request):
     if 'uid' in request.session:
         if request.session.has_key('uid'):
@@ -33925,6 +33952,9 @@ def itemdata(request):
         cmp1 = company.objects.get(id=request.session['uid'])
         print(cmp1.state)
         id = request.GET.get('id')
+        invoice_no=request.GET.get('invoice_no')
+        
+
         print("asdsadas")
         print(id)
         toda = date.today()
@@ -33934,11 +33964,28 @@ def itemdata(request):
         print(item)
         hsn = item.hsn
         qty = item.stock
-        price = item.purchase_cost
+        price = item.sales_cost  # for sales  ,taking price from sales_cost
+        price1=item.purchase_cost ## for purchase  ,taking price from purchase_cost
         gst = item.intra_st
         sgst = item.inter_st
         places=cmp1.state
-        return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst})
+        itm=item.name
+        print('level 1')
+
+        if invoice.objects.filter(invoiceno=invoice_no).exists():
+            invid=invoice.objects.get(invoiceno=invoice_no)
+            print('level 2')
+            if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
+                mesg="same item"
+                print('level 3')
+                return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
+            else:
+                mesg="different item"
+                print('level 4')
+                return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
+
+        else:
+            return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm})
     return redirect('/')
 
 def getperiod(request):
@@ -37854,8 +37901,19 @@ def addpurchasecredit(request):
         return render(request,'app1/add_credit_note.html',context)
     return redirect('credit_note') 
 
+def get_account_no(request):
+    cmp1 = company.objects.get(id=request.session['uid'])
+    bank_name=request.POST.get('id')
+    if bankings_G.objects.filter(bankname=bank_name,cid=cmp1).exists():
+        acc_obj=bankings_G.objects.get(bankname=bank_name,cid=cmp1)
+        accno=acc_obj.account_number
 
-    
+        return JsonResponse({'accno':accno},safe=False)
+    else:
+        return JsonResponse({'accno':0},safe=False)
+
+
+
 def getcustdata(request):
     if 'uid' in request.session:
         if request.session.has_key('uid'):
@@ -37916,7 +37974,6 @@ def create_credit(request):
         cmp1 = company.objects.get(id=request.session['uid'])
         if request.method == 'POST':
             debit_no = '1000'
-            print(request.POST.get('note'))
             pdebit = salescreditnote(customer =request.POST['customer'],
                                         address = request.POST['address'],
                                         email=request.POST['email'],
@@ -37925,15 +37982,27 @@ def create_credit(request):
                                         billno=request.POST['billno'],
                                         subtotal=request.POST['subtotal'],
                                         taxamount=request.POST['taxamount'],
-                                        shipping_charge = request.POST.get('ship'),
+                                        shipping_charge = request.POST['ship'],
                                         grandtotal=request.POST['grandtotal'],
-                                        description=request.POST.get('note'),
+                                        description=request.POST['note'],
                                         cid=cmp1,
-                                        status='Draft'
+                                        credit_no=request.POST['credit_no'],
+                                        reference_number=request.POST['referenceNumber'],
+                                        cgst=request.POST['cgst'],
+                                        sgst=request.POST['sgst'],
+                                        igst=request.POST['igst'],
+                                        adjustment=request.POST['adj'],
+                                        payment_method=request.POST['select_payment'],
+                                        cheque_no=request.POST['cheque_no'],
+                                        acc_no=request.POST['acc_no'],
+                                        upi_id=request.POST['upi_id'],
+                                        balance=request.POST['balance'],
+                                        status=request.POST['bt']
+
                                 )
             pdebit.save()
-            pdebit.credit_no = int(pdebit.credit_no) + pdebit.screditid
-            pdebit.save()
+            # pdebit.credit_no = int(pdebit.credit_no) + pdebit.screditid
+            # pdebit.save()
 
             items = request.POST.getlist("items[]")
             hsn = request.POST.getlist("hsn[]")
@@ -37947,7 +38016,7 @@ def create_credit(request):
             total = request.POST.getlist("total[]")
           
 
-            pdeb=salescreditnote.objects.get(screditid=pdebit.screditid)
+            # pdeb=salescreditnote.objects.get(screditid=pdebit.screditid)
 
             if len(items)==len(hsn)==len(quantity)==len(price)==len(tax)== len(discount)==len(total):
                 mapped=zip(items,hsn,quantity,price,tax,discount,total)
@@ -37955,7 +38024,7 @@ def create_credit(request):
                 for ele in mapped:
 
                     porderAdd = salescreditnote1.objects.create(items = ele[0],hsn=ele[1],quantity=ele[2],price=ele[3],
-                    tax=ele[4],discount = ele[5],total=ele[6],scredit=pdeb)
+                    tax=ele[4],discount = ele[5],total=ele[6],scredit=pdebit)
 
                     itemqty = itemtable.objects.get(name=ele[0],cid=cmp1)
                     if itemqty.stock != 0:
@@ -38368,17 +38437,31 @@ def customers21(request):
             return redirect('gocustomers')
         else:
              
-            cust = customer(title=request.POST.get('title'), firstname=firstname,
-                            lastname=lastname, company=request.POST.get('company_name'),
-                            location=request.POST.get('location'),placesupply=request.POST.get('placesupply'),gsttype=request.POST.get('gsttype'),
-                            gstin=request.POST.get('gstin'), panno=request.POST.get('panno'),
-                            email=request.POST.get('email'),website=request.POST.get('website'),
-                            mobile=request.POST.get('mobile'),street=request.POST.get('street'),
-                            city=request.POST.get('city'),state=request.POST.get('state'),
-                            pincode=request.POST.get('pincode'), country=request.POST.get('country'),
-                            shipstreet=request.POST.get('shipstreet'), shipcity=request.POST.get('shipcity'),
-                            shipstate=request.POST.get('shipstate'),shippincode=request.POST.get('shippincode'), 
-                            shipcountry=request.POST.get('shipcountry'),cid=cmp1)
+            cust = customer(title=request.POST.get('title'), 
+                            firstname=firstname,
+                            lastname=lastname, 
+                            company=request.POST.get('company_name'),
+                            location=request.POST.get('location'),
+                            placesupply=request.POST.get('placesupply'),
+                            gsttype=request.POST.get('gsttype'),
+                            gstin=request.POST.get('gstin'), 
+                            panno=request.POST.get('panno'),
+                            opening_balance=request.POST.get('openbalance'), 
+                            credit_limit=request.POST.get('credit_limit'),
+                            email=request.POST.get('email'),
+                            website=request.POST.get('website'),
+                            mobile=request.POST.get('mobile'),
+                            street=request.POST.get('street'),
+                            city=request.POST.get('city'),
+                            state=request.POST.get('state'),
+                            pincode=request.POST.get('pincode'), 
+                            country=request.POST.get('country'),
+                            shipstreet=request.POST.get('shipstreet'), 
+                            shipcity=request.POST.get('shipcity'),
+                            shipstate=request.POST.get('shipstate'),
+                            shippincode=request.POST.get('shippincode'), 
+                            shipcountry=request.POST.get('shipcountry'),
+                            cid=cmp1)
             cust.save()
             
             customer1 = customer.objects.get(customerid = cust.customerid,cid=cmp1)
@@ -42449,6 +42532,7 @@ def reccreatecustomer1(request):
 
 
 def itemdata1(request):
+    print('level 0')
     if 'uid' in request.session:
         if request.session.has_key('uid'):
             uid = request.session['uid']
