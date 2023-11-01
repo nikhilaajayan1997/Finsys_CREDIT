@@ -203,8 +203,9 @@
                                                 <select name='items[]' id="product1" class=" product form-control">
                                                     <option selected disabled>Select Items</option>
                                                     {% for i in item %}
-                                                        <option value="{{ i.name }}"> {{ i.name }}
-                                                        </option>
+                                                       
+                                                        <option value="{{ i.name }}"> {{ i.name }}</option>
+                                                        
                                                     {% endfor %}
                                                 </select>
                                                 <a class="btn btn-outline-secondary ml-1" role="button" data-target="#newitem" data-toggle="modal">+</a> 
@@ -1402,7 +1403,9 @@
                                     <select name='items[]' id="product${roinc}" class = "product form-control" >
                                         <option value=" " selected>Select Item</option>
                                         {% for i in item %}
+                                           
                                             <option value="{{ i.name }}">{{ i.name }}</option>
+                                            
                                         {% endfor %}
                                     </select>
                                     <a href="#">
@@ -1430,7 +1433,7 @@
                                     <option value=12  >12.0% GST(12%)</option>
                                         <option value=5  >05.0% GST(05%)</option>
                                     <option value=3  >03.0% GST(03%)</option>
-                                        <option value=0  >0.0% GST(0%)</option>
+                                        <option value=0>0.0% GST(0%)</option>
                                 </select>
                                 <select name='tax2[]' id="tax2${roinc}" class="form-control tax inter_tax d-none">
                                     <option selected disabled  >Select IGST</option>
@@ -1460,6 +1463,7 @@
                                                     
                     `
                 );
+            });
                 $('.product').each(function(index, dropdown) {
                     var row = $(dropdown).closest('.items-table-body'); // Assuming each row has a class 'item-row'
                     $.ajax({
@@ -1484,12 +1488,15 @@
                         }
                     });
                 });
-            });
+            
 
         });
-            // calculation---------------------------
 
-            $(document).on('change', '.product',function(){ 
+
+
+        // calculation---------------------------
+
+        $(document).on('change', '.product',function(){ 
                 
                 var n = $(this).attr("id").slice(7);
                 var x=$('#inv_no').val();
@@ -1516,7 +1523,7 @@
                     document.getElementById('unit'+n).value = data3;
                      if(data6 == 'different item')
                     {
-                        document.getElementById('item_label').text=""
+                        document.getElementById('item_label').innerHTML="";
                         document.getElementById('item_label').style.color="red"
                         document.getElementById('item_label').innerHTML=data6;
                     }
@@ -1526,8 +1533,10 @@
 
             });
 
+            
             $(document).on('change','.qty',function(){ 
                 var n = $(this).attr("id").slice(3);
+                var n1=$(this).val();
                 // var n1=$('#hsn').attr("id").slice(3);
                 // var x=$('#inv_no').val();
                 $.ajax({
@@ -1536,32 +1545,83 @@
                 data:{
                     id1 : $(this).val(),
                     id:$('#hsn'+n).val(),
+                    id2:$('#product'+n).val(),
                     invoice_no:$('#inv_no').val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
-                
                 success: function(response) {
                     data6=response.msg
+                    data5=response.quantity1
+                    document.getElementById('item_label').innerHTML=""
+                    sum=parseInt(data5)+parseInt(n1) 
+                    document.getElementById('qtyspan'+n).innerHTML=sum;
+
+
                      if(data6 == 'different quantity selected')
                     {
-                        document.getElementById('item_label').text=""
-
+                        document.getElementById('item_label').innerHTML=""
                         document.getElementById('item_label').style.color="red"
                         document.getElementById('item_label').innerHTML=data6;
-
-
                     }
-                    
-
                 },
                 });
-                
+            });
 
+            $(document).on('change','.intra_tax',function(){ 
+                var n = $(this).attr("id").slice(4);
+                
+                $.ajax({
+                url: "{% url 'itemdata_tax1' %}",
+                type : 'GET',
+                data:{
+                    id1 : $(this).val(),
+                    id:$('#hsn'+n).val(),
+                    invoice_no:$('#inv_no').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                success: function(response) {
+                    data6=response.msg
+                    document.getElementById('item_label').innerHTML=""
+
+                     if(data6 == 'different tax selected')
+                    {
+                        document.getElementById('item_label').innerHTML=""
+                        document.getElementById('item_label').style.color="red"
+                        document.getElementById('item_label').innerHTML=data6;
+                    }
+                },
+                });
             });
 
 
+            $(document).on('change','.inter_tax',function(){ 
+                var n = $(this).attr("id").slice(4);
+                
+                $.ajax({
+                url: "{% url 'itemdata_tax1' %}",
+                type : 'GET',
+                data:{
+                    id1 : $(this).val(),
+                    id:$('#hsn'+n).val(),
+                    invoice_no:$('#inv_no').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                success: function(response) {
+                    data6=response.msg
+                    document.getElementById('item_label').innerHTML=""
+
+                     if(data6 == 'different tax selected')
+                    {
+                        document.getElementById('item_label').innerHTML=""
+                        document.getElementById('item_label').style.color="red"
+                        document.getElementById('item_label').innerHTML=data6;
+                    }
+                },
+                });
+            });
 
 
+           
 
 
 
@@ -1908,27 +1968,28 @@
 
                             if (data.inv_id) {
                                 $('#inv_no').append($('<option>', {
-                            value: data.inv_id,
+                            value:0+" "+data.inv_id,
                             text:'Invoice'+" "+ data.inv_id
                         }));
 
                         }
                         else{
                             $('#inv_no').append($('<option>', {
-                            value: '0',
+                            value:3+" "+'0',
                             text: 'invoice not available'
                         }));
                         }
+
                         if (data.recinv_id) {
                                 $('#inv_no').append($('<option>', {
-                            value: data.recinv_id,
+                            value:1+" "+data.recinv_id,
                             text:'Re.Invoice'+" "+data.recinv_id
                         }));
 
                         }
                         else{
                             $('#inv_no').append($('<option>', {
-                            value: '0',
+                            value:3+" "+'0',
                             text: 'recuring invoice not available'
                         }));
                         }

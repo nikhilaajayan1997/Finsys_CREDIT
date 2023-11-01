@@ -33926,21 +33926,90 @@ def itemdata_qty(request):
         cmp1 = company.objects.get(id=request.session['uid'])
         id = request.GET.get('id')
         id1 = request.GET.get('id1')
-        invoice_no=request.GET.get('invoice_no')
+        id2=request.GET.get('id2')
+        item = itemtable.objects.get(name=id2,cid=cmp1)
+        invoice_no=request.GET.get('invoice_no').split(" ")[1]
+        opt_num=request.GET.get('invoice_no').split(" ")[0]
+        item_quantity=item.stock
         hsn = id
         quantity=id1
+        quantity1=int(quantity)
+        if opt_num == 0:
+            if invoice.objects.filter(invoiceno=invoice_no).exists():
+                invid=invoice.objects.get(invoiceno=invoice_no)
+                if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
+                    itm_qty=invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn)
+                    count=itm_qty.count()
+                    print(count)
+                    if count > 1:
+                        qty_sum=0
+                        qty_lst=[]
+                        for i in itm_qty:
+                            qty_lst.append(i.qty)
+                        for i in qty_lst:
+                            qty_sum=qty_sum+i
+
+                        if int(quantity) > qty_sum:
+                            msg="different quantity selected"
+                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
+                        else:
+                            msg="same quantity"
+                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
+
+                    else:
+                        itm_qty=invoice_item.objects.get(invoice=invid.invoiceid,hsn=hsn)
+                        if quantity1 > itm_qty.qty:
+                            msg="different quantity selected"
+                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
+                        else:
+                            msg="same quantity"
+                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
+            
+        else:
+            return JsonResponse({'msg':"no message",'quantity1':item_quantity})
+
+def itemdata_tax1(request):
+    if 'uid' in request.session:
+        if request.session.has_key('uid'):
+            uid = request.session['uid']
+        else:
+            return redirect('/')
+        cmp1 = company.objects.get(id=request.session['uid'])
+        id = request.GET.get('id')
+        id1 = request.GET.get('id1')
+        invoice_no=request.GET.get('invoice_no')
+        hsn = id
+        taxx=id1
+        print(taxx)
         if invoice.objects.filter(invoiceno=invoice_no).exists():
             invid=invoice.objects.get(invoiceno=invoice_no)
             if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
-                itm_qty=invoice_item.objects.get(invoice=invid.invoiceid,hsn=hsn)
-                if int(quantity) > itm_qty.qty:
-                    msg="different quantity selected"
-                    return JsonResponse({'msg':msg})
+                itm_qty=invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn)
+                count=itm_qty.count()
+                if count > 1:
+                    taxlst=[]
+                    for i in itm_qty:
+                        taxlst.append(i.tax)
+                    if taxx not in taxlst:
+                        msg="different tax selected"
+                        return JsonResponse({'msg':msg})
+                    else:
+                        msg="same quantity"
+                        return JsonResponse({'msg':msg})
+
                 else:
-                    msg="same quantity"
-                    return JsonResponse({'msg':msg})
+                    itm_qty=invoice_item.objects.get(invoice=invid.invoiceid,hsn=hsn)
+                    if taxx < itm_qty.tax  or taxx > itm_qty.tax:
+                        msg="different tax selected"
+                        return JsonResponse({'msg':msg})
+                    else:
+                        msg="same quantity"
+                        return JsonResponse({'msg':msg})
             else:
                 return JsonResponse({'msg':"no message"})
+
+
+
 
 
 def itemdata(request):
@@ -33952,8 +34021,8 @@ def itemdata(request):
         cmp1 = company.objects.get(id=request.session['uid'])
         print(cmp1.state)
         id = request.GET.get('id')
-        invoice_no=request.GET.get('invoice_no')
-        
+        invoice_no=request.GET.get('invoice_no').split(" ")[1]
+        opt_num=request.GET.get('invoice_no').split(" ")[0]
 
         print("asdsadas")
         print(id)
@@ -33971,18 +34040,31 @@ def itemdata(request):
         places=cmp1.state
         itm=item.name
         print('level 1')
-
-        if invoice.objects.filter(invoiceno=invoice_no).exists():
-            invid=invoice.objects.get(invoiceno=invoice_no)
-            print('level 2')
-            if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
-                mesg="same item"
-                print('level 3')
-                return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
-            else:
-                mesg="different item"
-                print('level 4')
-                return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
+        if int(opt_num) == 0: 
+            if invoice.objects.filter(invoiceno=invoice_no).exists():
+                invid=invoice.objects.get(invoiceno=invoice_no)
+                print('level 2')
+                if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
+                    mesg="same item"
+                    print('level 3')
+                    return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
+                else:
+                    mesg="different item"
+                    print('level 4')
+                    return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
+            
+        elif int(opt_num) == 1:
+            if recinvoice.objects.filter(recinvoiceno=invoice_no).exists():
+                invid=recinvoice.objects.get(recinvoiceno=invoice_no)
+                print('level 2')
+                if recinvoice_item.objects.filter(recinvoice=invid.recinvoiceid,hsn=hsn).exists():
+                    mesg="same item"
+                    print('level 3')
+                    return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
+                else:
+                    mesg="different item"
+                    print('level 4')
+                    return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
 
         else:
             return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm})
