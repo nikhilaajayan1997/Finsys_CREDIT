@@ -1537,8 +1537,7 @@
             $(document).on('change','.qty',function(){ 
                 var n = $(this).attr("id").slice(3);
                 var n1=$(this).val();
-                // var n1=$('#hsn').attr("id").slice(3);
-                // var x=$('#inv_no').val();
+                
                 $.ajax({
                 url: "{% url 'itemdata_qty' %}",
                 type : 'GET',
@@ -1621,10 +1620,6 @@
             });
 
 
-           
-
-
-
             $(document).on('click','.remove_row',function(){
                 var row_id = $(this).attr("id");
                 $('#addr0'+row_id+'').remove();
@@ -1632,9 +1627,6 @@
                 calc();
             });
         
-            
-    
-
             $(document).on('click','.clone_row',function(){
                 var roinc = $("#items-table-body tr").length;
 
@@ -1956,7 +1948,7 @@
                             document.getElementById('cred_email').value = data.email;
                             document.getElementById('mailaddr').value = data.street + '\n' + data.city + '\n' + data.state + '\n' + data.country  + '\n' + data.pincode ;
                             document.getElementById('plosu').value=data.place_supply;
-                            document.getElementById('gst_treat').value=data.gst_treat
+                            document.getElementById('gst_treat').value=data.gst_treat;
                             $('#inv_no').empty();
                             if(data.gstno)
                             {
@@ -1964,6 +1956,10 @@
                                 document.getElementById('gst_no_label').style.display='block';
                                 $('#gst_no').val(data.gstno);
 
+                            }
+                            else{
+                                document.getElementById('gst_no').style.display='none';
+                                document.getElementById('gst_no_label').style.display='none';
                             }
 
                             if (data.inv_id) {

@@ -33923,6 +33923,7 @@ def itemdata_qty(request):
             uid = request.session['uid']
         else:
             return redirect('/')
+        print("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq")
         cmp1 = company.objects.get(id=request.session['uid'])
         id = request.GET.get('id')
         id1 = request.GET.get('id1')
@@ -33931,10 +33932,12 @@ def itemdata_qty(request):
         invoice_no=request.GET.get('invoice_no').split(" ")[1]
         opt_num=request.GET.get('invoice_no').split(" ")[0]
         item_quantity=item.stock
+        print("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq")
+        print(item_quantity)
         hsn = id
         quantity=id1
         quantity1=int(quantity)
-        if opt_num == 0:
+        if int(opt_num) == 0:
             if invoice.objects.filter(invoiceno=invoice_no).exists():
                 invid=invoice.objects.get(invoiceno=invoice_no)
                 if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
@@ -33964,6 +33967,38 @@ def itemdata_qty(request):
                         else:
                             msg="same quantity"
                             return JsonResponse({'msg':msg,'quantity1':item_quantity})
+                else:
+                    return JsonResponse({'msg':"no message",'quantity1':item_quantity})
+        elif int(opt_num) == 1:
+            if recinvoice.objects.filter(recinvoiceno=invoice_no).exists():
+                invid=recinvoice.objects.get(recinvoiceno=invoice_no)
+                if recinvoice_item.objects.filter(recinvoice=invid.recinvoiceid,hsn=hsn).exists():
+                    itm_qty=recinvoice_item.objects.filter(recinvoice=invid.recinvoiceid,hsn=hsn)
+                    count=itm_qty.count()
+                    print(count)
+                    if count > 1:
+                        qty_sum=0
+                        qty_lst=[]
+                        for i in itm_qty:
+                            qty_lst.append(i.qty)
+                        for i in qty_lst:
+                            qty_sum=qty_sum+i
+
+                        if int(quantity) > qty_sum:
+                            msg="different quantity selected"
+                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
+                        else:
+                            msg="same quantity"
+                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
+
+                    else:
+                        itm_qty=recinvoice_item.objects.get(recinvoice=invid.recinvoiceid,hsn=hsn)
+                        if quantity1 > itm_qty.qty:
+                            msg="different quantity selected"
+                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
+                        else:
+                            msg="same quantity"
+                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
             
         else:
             return JsonResponse({'msg':"no message",'quantity1':item_quantity})
@@ -33977,36 +34012,67 @@ def itemdata_tax1(request):
         cmp1 = company.objects.get(id=request.session['uid'])
         id = request.GET.get('id')
         id1 = request.GET.get('id1')
-        invoice_no=request.GET.get('invoice_no')
+        invoice_no=request.GET.get('invoice_no').split(" ")[1]
+        opt_num=request.GET.get('invoice_no').split(" ")[0]
         hsn = id
         taxx=id1
         print(taxx)
-        if invoice.objects.filter(invoiceno=invoice_no).exists():
-            invid=invoice.objects.get(invoiceno=invoice_no)
-            if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
-                itm_qty=invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn)
-                count=itm_qty.count()
-                if count > 1:
-                    taxlst=[]
-                    for i in itm_qty:
-                        taxlst.append(i.tax)
-                    if taxx not in taxlst:
-                        msg="different tax selected"
-                        return JsonResponse({'msg':msg})
-                    else:
-                        msg="same quantity"
-                        return JsonResponse({'msg':msg})
+        if int(opt_num) == 0:
+            if invoice.objects.filter(invoiceno=invoice_no).exists():
+                invid=invoice.objects.get(invoiceno=invoice_no)
+                if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
+                    itm_qty=invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn)
+                    count=itm_qty.count()
+                    if count > 1:
+                        taxlst=[]
+                        for i in itm_qty:
+                            taxlst.append(i.tax)
+                        if taxx not in taxlst:
+                            msg="different tax selected"
+                            return JsonResponse({'msg':msg})
+                        else:
+                            msg="same quantity"
+                            return JsonResponse({'msg':msg})
 
-                else:
-                    itm_qty=invoice_item.objects.get(invoice=invid.invoiceid,hsn=hsn)
-                    if taxx < itm_qty.tax  or taxx > itm_qty.tax:
-                        msg="different tax selected"
-                        return JsonResponse({'msg':msg})
                     else:
-                        msg="same quantity"
-                        return JsonResponse({'msg':msg})
-            else:
-                return JsonResponse({'msg':"no message"})
+                        itm_qty=invoice_item.objects.get(invoice=invid.invoiceid,hsn=hsn)
+                        if taxx < itm_qty.tax  or taxx > itm_qty.tax:
+                            msg="different tax selected"
+                            return JsonResponse({'msg':msg})
+                        else:
+                            msg="same quantity"
+                            return JsonResponse({'msg':msg})
+        elif int(opt_num) == 1:
+            print("zzzzzzzzzzzzzzzzzzzzzzzzzzz")
+            if recinvoice.objects.filter(recinvoiceno=invoice_no).exists():
+                invid=recinvoice.objects.get(recinvoiceno=invoice_no)
+                if recinvoice_item.objects.filter(recinvoice=invid.recinvoiceid,hsn=hsn).exists():
+                    itm_qty=recinvoice_item.objects.filter(recinvoice=invid.recinvoiceid,hsn=hsn)
+                    count=itm_qty.count()
+                    if count > 1:
+                        print("zzzzzzzzzzzzzzzzzzzzzzzzzzz")
+                        taxlst=[]
+                        for i in itm_qty:
+                            taxlst.append(i.tax)
+                        if taxx not in taxlst:
+                            msg="different tax selected"
+                            return JsonResponse({'msg':msg})
+                        else:
+                            msg="same quantity"
+                            return JsonResponse({'msg':msg})
+
+                    else:
+                        print("zzzzzzzzzzzzzzzzzzzzzzzzzzz")
+                        itm_qty=recinvoice_item.objects.get(recinvoice=invid.recinvoiceid,hsn=hsn)
+                        if taxx < itm_qty.tax  or taxx > itm_qty.tax:
+                            msg="different tax selected"
+                            return JsonResponse({'msg':msg})
+                        else:
+                            msg="same quantity"
+                            return JsonResponse({'msg':msg})
+
+        else:
+            return JsonResponse({'msg':"no message"})
 
 
 
@@ -34023,6 +34089,8 @@ def itemdata(request):
         id = request.GET.get('id')
         invoice_no=request.GET.get('invoice_no').split(" ")[1]
         opt_num=request.GET.get('invoice_no').split(" ")[0]
+        print("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq")
+        print(opt_num)
 
         print("asdsadas")
         print(id)
@@ -38265,31 +38333,72 @@ def editcreditnote(request, id):
     
     cmp1 = company.objects.get(id=request.session['uid'])
     pcrd=salescreditnote.objects.get(screditid=id)
-    pcrd1 = salescreditnote1.objects.all().filter(scredit=id)
+    pcrd1 = salescreditnote1.objects.filter(scredit=pcrd.screditid)
+    banks=bankings_G.objects.all() 
     vndr = customer.objects.all()  
     pbill = purchasebill.objects.all()  
     item = itemtable.objects.all() 
     d = pcrd.creditdate
-    
+    billno1=pcrd.billno.split(" ")[1]
+    billno2=pcrd.billno.split(" ")[0]
+    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+    print(billno1)
+    print(billno2)
+    if int(billno2) == 0:
+        mssg='Invoice'
+    elif int(billno2) == 1:
+        mssg='Re.Inoice'
+    else:
+        mssg=" "
     cust1 = customer.objects.get(customerid = pcrd.customer.split(" ")[0])
+    name=pcrd.customer
+    name2=name.split()[1]
+    name3=name.split()[2]
+    name1=name2+" "+name3
  
     cgst=float(pcrd.taxamount)/2
     sgst=float(pcrd.taxamount)/2
-    context={
-        'pcrd':pcrd,
-        'pcrd1':pcrd1,
-        'vndr':vndr,
-        'pbill':pbill,
-        'item':item,
-        'cgst':cgst,
-        'sgst':sgst,
-        'cmp1':cmp1,
-        'cust':cust1,
-        'd':d
+    if invoice.objects.filter(customername=name,cid = cmp1).exists() or recinvoice.objects.filter(customername=name1,cid = cmp1).exists():
+            if invoice.objects.filter(customername=name,cid = cmp1).exists() and recinvoice.objects.filter(customername=name1,cid = cmp1).exists():
+                inv_obj=invoice.objects.get(customername=name,cid = cmp1)
+                inv_id=inv_obj.invoiceno
+                recinv_obj=recinvoice.objects.get(customername=name1,cid = cmp1)
+                recinv_id=recinv_obj.recinvoiceno
+                context={'pcrd':pcrd,'pcrd1':pcrd1,'vndr':vndr,'pbill':pbill,'item':item,'cgst':cgst,'sgst':sgst,'cmp1':cmp1,'cust':cust1,'d':d,'billno1':billno1,'billno2':billno2,'msssg':mssg,'inv_id':inv_id,'recinv_id':recinv_id,'banks':banks}
+                return render(request,'app1/editcreditnote.html', context)
 
-    }
+
+            elif invoice.objects.filter(customername=name,cid = cmp1).exists():
+                inv_obj=invoice.objects.get(customername=name,cid = cmp1)
+                inv_id=inv_obj.invoiceno
+                context={'pcrd':pcrd,'pcrd1':pcrd1,'vndr':vndr,'pbill':pbill,'item':item,'cgst':cgst,'sgst':sgst,'cmp1':cmp1,'cust':cust1,'d':d,'billno1':billno1,'billno2':billno2,'msssg':mssg,'inv_id':inv_id,'banks':banks}
+                return render(request,'app1/editcreditnote.html', context)
+            elif recinvoice.objects.filter(customername=name1,cid = cmp1).exists():
+                recinv_obj=recinvoice.objects.get(customername=name1,cid = cmp1)
+                recinv_id=recinv_obj.recinvoiceno
+                context={'pcrd':pcrd,'pcrd1':pcrd1,'vndr':vndr,'pbill':pbill,'item':item,'cgst':cgst,'sgst':sgst,'cmp1':cmp1,'cust':cust1,'d':d,'billno1':billno1,'billno2':billno2,'msssg':mssg,'recinv_id':recinv_id,'banks':banks}
+                return render(request,'app1/editcreditnote.html', context)
+    else:
+        context={'pcrd':pcrd,'pcrd1':pcrd1,'vndr':vndr,'pbill':pbill,'item':item,'cgst':cgst,'sgst':sgst,'cmp1':cmp1,'cust':cust1,'d':d,'billno1':billno1,'billno2':billno2,'msssg':mssg,'banks':banks}
+        return render(request,'app1/editcreditnote.html', context)
+    # context={
+    #     'pcrd':pcrd,
+    #     'pcrd1':pcrd1,
+    #     'vndr':vndr,
+    #     'pbill':pbill,
+    #     'item':item,
+    #     'cgst':cgst,
+    #     'sgst':sgst,
+    #     'cmp1':cmp1,
+    #     'cust':cust1,
+    #     'd':d,
+    #     'billno1':billno1,
+    #     'billno2':billno2,
+    #     'msssg':mssg
+
+    # }
   
-    return render(request,'app1/editcreditnote.html', context)
+    # return render(request,'app1/editcreditnote.html', context)
 
 def editcreditfun(request,id):
     if 'uid' in request.session:
@@ -38312,11 +38421,10 @@ def editcreditfun(request,id):
             IGST = request.POST.get('igst')
             SGST = request.POST.get('sgst')
             CGST = request.POST.get('cgst')
+
             pdebt.shipping_charge = request.POST.get('ship')
-            
             pdebt.customer = vendor
             pdebt.address = address
-
             pdebt.email=email
             pdebt.creditdate=request.POST.get('creditdate')
             pdebt.supply=supply
@@ -38324,6 +38432,15 @@ def editcreditfun(request,id):
             pdebt.subtotal=subtotal
             pdebt.taxamount=taxamount
             pdebt.grandtotal=grandtotal
+            pdebt.cgst=CGST
+            pdebt.cgst=SGST
+            pdebt.cgst=IGST
+            pdebt.adjustment=request.POST.get('adj')
+            pdebt.balance=request.POST.get('balance')
+            pdebt.balance=request.POST.get('payment_method')
+            pdebt.balance=request.POST.get('acc_no')
+            pdebt.balance=request.POST.get('cheque_no')
+            pdebt.balance=request.POST.get('upi_id')
             pdebt.save()
             
             
