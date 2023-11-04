@@ -166,7 +166,7 @@
                             {% for p in pdebit %}
                             <tr class="table-row " data-href="" style="text-align: center;">
                                 <td>{{ p.creditdate | date:'Y-m-d' }}</td>
-                                <td>CN - {{p.credit_no}}</td>
+                                <td>{{p.credit_no}}</td>
                                 <td>{{ p.cust }}</td>
                                 <td>{{ p.email }}</td>
                                 <td>{{ p.grandtotal }}</td>
@@ -184,14 +184,14 @@
             
         </div>
         <div class="bar p-5">
-            <div class="lef">
+            <div class="right">
                 <h5 class="pt-3" >Total Amount</h5>
                 <h6 id="totalTaxAmount" ></h6>
             </div>
-            <div class="right">
+            <!-- <div class="right">
                 <h5 class="pt-3">Total Amount</h5>
                 <h6 id="totalAmount" class="d-inline-block"></h6>
-            </div>
+            </div> -->
         </div>
     
     </div>

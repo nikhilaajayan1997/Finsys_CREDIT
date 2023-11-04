@@ -458,14 +458,56 @@
                                     <h6 class="mb-0">Reference No</h6>
                                 </div>
                                 <div class="col-md-3 mt-3">
-                                    <p class="mb-0">{{ ewbill.document_type }}</p>
+                                    <p class="mb-0">{{ pcrd.reference_number}}</p>
                                 </div>
                                 <div class="col-md-3 mt-3 vl">
                                     <h6 class="mb-0">Invoice #</h6>
                                 </div>
                                 <div class="col-md-3 mt-3">
-                                    <p class="mb-0">{{ewbill.transaction_type}}</p>
+                                    <p class="mb-0">{{pcrd.billno}}</p>
                                 </div>
+                                
+                                
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 mt-3 vl">
+                                    <h6 class="mb-0">Payment Method</h6>
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    <p class="mb-0">{{pcrd.payment_method}}</p>
+                                </div>
+                                {% if pcrd.payment_method == 'Cheque' %}
+                                <div class="col-md-3 mt-3 vl">
+                                    <h6 class="mb-0">Cheque No</h6>
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    <p class="mb-0">{{pcrd.cheque_no}}</p>
+                                </div>
+                                {% elif pcrd.payment_method == 'UPI' %}
+                                <div class="col-md-3 mt-3 vl">
+                                    <h6 class="mb-0">UPI Id</h6>
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    <p class="mb-0">{{pcrd.upi_id}}</p>
+                                </div>
+                                
+                                {% elif pcrd.payment_method == 'Cash' %}
+                                <div class="col-md-3 mt-3 vl">
+                                    
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    
+                                </div>
+                                {% else %}
+                                <div class="col-md-3 mt-3 vl">
+                                    <h6 class="mb-0">A/C No</h6>
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    <p class="mb-0">{{pcrd.acc_no}}</p>
+                                </div>
+                                {% endif %}
+
+
                             </div>
                             
                             <hr>
@@ -484,6 +526,9 @@
                                 </div>
                                 <div class="col-md-3 mt-3 vl">
                                     <h6 class="mb-0">Email</h6>
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    <p class="mb-0">{{pcrd.email}}</p>
                                 </div>
                                
                                 <div class="col-md-3 mt-3">
@@ -513,7 +558,7 @@
                                     <h6 class="mb-0">Place Of Supply</h6>
                                 </div>
                                 <div class="col-md-2 mt-5">
-                                    <p class="mb-0"></p>
+                                    <p class="mb-0">{{pcrd.supply}}</p>
                                 </div>
                                     
                             </div>
@@ -549,28 +594,36 @@
                                 <h6>{{pcrd.taxamount }}</h6>
                             </div>
                             
-                            {%if ewbill.igst%}
+                            {% if pcrd.igst != 0.00 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">IGST</h5>
                                 <h6>{{ pcrd.igst }}</h6>
                             </div>
                             {%endif%}
-                            {%if pcrd.cgst%}
+                            {% if pcrd.cgst != 0|floatformat:2 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">CGST</h5>
                                 <h6>{{ pcrd.cgst }}</h6>
                             </div>
                             {%endif%}
-                            {%if pcrd.sgst%}
+                            {% if pcrd.sgst != 0|floatformat:2 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">SGST</h5>
                                 <h6>{{ pcrd.sgst }}</h6>
                             </div>
                             {%endif%}
+                            {% if  pcrd.shipping_charge != 0|floatformat:2 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">Shipping Charge</h5>
                                 <h6>{{ pcrd.shipping_charge}}</h6>
                             </div>
+                            {% endif %}
+                            {% if  pcrd.adjustment != 0|floatformat:2 %}
+                            <div class="d-flex justify-content-between mb-4">
+                                <h5 class="">Adjustment</h5>
+                                <h6>{{ pcrd.adjustment}}</h6>
+                            </div>
+                            {% endif %}
                             
                             <hr class="my-4" style="background-color: #fff;">
                             <div class="d-flex justify-content-between mb-4">

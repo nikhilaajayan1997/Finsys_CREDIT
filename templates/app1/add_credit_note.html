@@ -122,8 +122,9 @@
                                     <input type="number" class="form-control" name="referenceNumber" id="referenceNumber" value="{{next_id}}" readonly>
                                 </div>
                                 <div class="col-md-5 mt-3" >
-                                    <label for="validationCustom02" id="credit_note_no" >Credit Note Number</label>
-                                    <input type="text" class="form-control" name="credit_no" id="credit_no">
+                                    <label for="validationCustom02" id="credit_note_no" >Credit Note Number </label>  <label for="" style="color: rgb(190, 190, 190);" id="credit_span">( Credit number format {{cred_no}} )</label>
+
+                                    <input type="text" class="form-control" onchange="check_credit_note_number()" name="credit_no" id="credit_no">
                                 </div>
                             </div>
                             
@@ -1195,6 +1196,28 @@
             
         })
     </script>
+    <script>
+       function check_credit_note_number(){
+
+            var str=document.getElementById('credit_no').value;
+
+            var ref_no=document.getElementById('referenceNumber').value;
+            var ref_len=ref_no.length;
+            var x=ref_len
+            var sliced_string=str.slice(-x,)
+
+            if(parseInt(ref_no) == parseInt(sliced_string))
+            {
+                document.getElementById('credit_span').style.color="green";
+                document.getElementById('credit_span').innerHTML="consicutive number";
+
+            }
+            else{
+                document.getElementById('credit_span').style.color="red";
+                document.getElementById('credit_span').innerHTML="not consicutive number";
+            }
+        }
+    </script>
 
     <script>
 
@@ -1947,8 +1970,41 @@
                             console.log(data.email);
                             document.getElementById('cred_email').value = data.email;
                             document.getElementById('mailaddr').value = data.street + '\n' + data.city + '\n' + data.state + '\n' + data.country  + '\n' + data.pincode ;
+                            
                             document.getElementById('plosu').value=data.place_supply;
                             document.getElementById('gst_treat').value=data.gst_treat;
+                            $(".seltax").removeClass('d-flex');
+                $(".seltax").addClass('d-none');
+        var place_supply=document.getElementById('plosu').value;
+        var cmp_place=document.getElementById('cmpstate').value;
+        if( place_supply == cmp_place ){
+            $(".inter_tax").removeClass('d-flex');
+                    $(".inter_tax").addClass('d-none');
+
+                    $(".intra_tax").removeClass('d-none');
+                    $(".intra_tax").addClass('d-flex');
+                    document.getElementById('cgst1').style.display = 'flex';
+                    document.getElementById('sgst1').style.display = 'flex';
+                    document.getElementById('igst1').style.display = 'none'; 
+                   
+
+        }
+        else{
+            $(".intra_tax").removeClass('d-flex');
+                    $(".intra_tax").addClass('d-none');
+
+                    $(".inter_tax").removeClass('d-none');
+                    $(".inter_tax").addClass('d-flex');
+                    document.getElementById('cgst1').style.display = 'none';
+                    document.getElementById('sgst1').style.display = 'none';
+                    document.getElementById('igst1').style.display = 'flex';
+
+                   
+
+        }
+        
+
+
                             $('#inv_no').empty();
                             if(data.gstno)
                             {

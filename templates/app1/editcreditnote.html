@@ -313,7 +313,7 @@ window.onload=function(){
                                         <td style="width: 20%;">
                                             <div class="d-flex">
                                                 <select name='items[]' id="product{{forloop.counter}}" class="form-control product">
-                                                    <option selected>{{ pro.items }}</option>
+                                                    <option value="{{ pro.items }}" selected>{{ pro.items }}</option>
                                                     {% for i in item %}
                                                         <option value="{{ i.name }}">
                                                             {{ i.name }}
@@ -446,7 +446,7 @@ window.onload=function(){
                                     <div class="col-sm-4 mt-2"><label for="a" class="text-center">Adjustment</label></div>
                                     <div class="col-sm-1 mt-2">:</div>
                                     <div class="col-sm-7 mt-2"><input type="number" step="any" name='adj' id="adj" placeholder='0.00' 
-                                        class="form-control"/>
+                                        class="form-control"  value="{{pcrd.adjustment}}"/>
                                     </div>
                                     <div class="col-sm-4 m-0 p-0"></div>
                                 </div>
@@ -1312,7 +1312,7 @@ window.onload=function(){
     </script>
 
     <script>
-
+     
         function show_fields()
         {
             var option=document.getElementById('select_payment').value;
@@ -1683,11 +1683,14 @@ for(i = 1; i<=roinc;i++){
                 var bc = document.getElementById("plosu").value;
                 var compstate = document.getElementById("cmpstate").value;
                 if (bc == compstate ) {
+                   
+
                     document.getElementById('cgst1').style.display = 'flex';
                     document.getElementById('sgst1').style.display = 'flex';
                     document.getElementById('igst1').style.display = 'none'; 
 
                 } else {
+                    
                     document.getElementById('cgst1').style.display = 'none';
                     document.getElementById('sgst1').style.display = 'none';
                     document.getElementById('igst1').style.display = 'flex';
@@ -2200,6 +2203,31 @@ for(i = 1; i<=roinc;i++){
                             document.getElementById('mailaddr').value = data.street + '\n' + data.city + '\n' + data.state + '\n' + data.country  + '\n' + data.pincode ;
                             document.getElementById('plosu').value=data.place_supply;
                             document.getElementById('gst_treat').value=data.gst_treat;
+                            var place_supply=document.getElementById('plosu').value;
+        var cmp_place=document.getElementById('cmpstate').value;
+        if( place_supply == cmp_place ){
+            $(".inter_tax").removeClass('d-flex');
+                    $(".inter_tax").addClass('d-none');
+
+                    $(".intra_tax").removeClass('d-none');
+                    $(".intra_tax").addClass('d-flex');
+                    document.getElementById('cgst1').style.display = 'flex';
+                    document.getElementById('sgst1').style.display = 'flex';
+                    document.getElementById('igst1').style.display = 'none'; 
+
+        }
+        else{
+            $(".intra_tax").removeClass('d-flex');
+                    $(".intra_tax").addClass('d-none');
+
+                    $(".inter_tax").removeClass('d-none');
+                    $(".inter_tax").addClass('d-flex');
+                    document.getElementById('cgst1').style.display = 'none';
+                    document.getElementById('sgst1').style.display = 'none';
+                    document.getElementById('igst1').style.display = 'flex';
+        }
+
+                            
                             $('#inv_no').empty();
                             if(data.gstno)
                             {
@@ -2319,20 +2347,34 @@ for(i = 1; i<=roinc;i++){
             });
 
             $(document).on('change','#plosu',function()   {
-                $(".seltax").removeClass('d-none');
-                $(".seltax").addClass('d-flex');
-                $(".intra_tax").removeClass('d-flex');
-                $(".intra_tax").addClass('d-none');
-                $(".inter_tax").removeClass('d-flex');
-                $(".inter_tax").addClass('d-none');
+                // $(".seltax").removeClass('d-none');
+                // $(".seltax").addClass('d-flex');
+                // $(".intra_tax").removeClass('d-flex');
+                // $(".intra_tax").addClass('d-none');
+                // $(".inter_tax").removeClass('d-flex');
+                // $(".inter_tax").addClass('d-none');
+
+
+                $(".seltax").removeClass('d-flex');
+                $(".seltax").addClass('d-none');
                 var bc = document.getElementById("plosu").value;
                 var compstate = document.getElementById("cmpstate").value;
                 if (bc == compstate ) {
+                    $(".inter_tax").removeClass('d-flex');
+                    $(".inter_tax").addClass('d-none');
+
+                    $(".intra_tax").removeClass('d-none');
+                    $(".intra_tax").addClass('d-flex');
                     document.getElementById('cgst1').style.display = 'flex';
                     document.getElementById('sgst1').style.display = 'flex';
                     document.getElementById('igst1').style.display = 'none'; 
 
                 } else {
+                    $(".intra_tax").removeClass('d-flex');
+                    $(".intra_tax").addClass('d-none');
+
+                    $(".inter_tax").removeClass('d-none');
+                    $(".inter_tax").addClass('d-flex');
                     document.getElementById('cgst1').style.display = 'none';
                     document.getElementById('sgst1').style.display = 'none';
                     document.getElementById('igst1').style.display = 'flex';

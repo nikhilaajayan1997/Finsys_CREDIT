@@ -38046,8 +38046,11 @@ def addpurchasecredit(request):
                 next_id = cursor.fetchone()[0]
         # except:
         #     print("error occured")
+        if salescreditnote.objects.all().exists():
+            credit_obj=salescreditnote.objects.get(reference_number=1)
+            cred_no=credit_obj.credit_no
     
-        context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':next_id,'banks':banks} 
+        context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':next_id,'banks':banks,'cred_no':cred_no} 
         return render(request,'app1/add_credit_note.html',context)
     return redirect('credit_note') 
 
@@ -38437,10 +38440,10 @@ def editcreditfun(request,id):
             pdebt.cgst=IGST
             pdebt.adjustment=request.POST.get('adj')
             pdebt.balance=request.POST.get('balance')
-            pdebt.balance=request.POST.get('payment_method')
-            pdebt.balance=request.POST.get('acc_no')
-            pdebt.balance=request.POST.get('cheque_no')
-            pdebt.balance=request.POST.get('upi_id')
+            pdebt.payment_method=request.POST.get('select_payment')
+            pdebt.acc_no=request.POST.get('acc_no')
+            pdebt.cheque_no=request.POST.get('cheque_no')
+            pdebt.upi_id=request.POST.get('upi_id')
             pdebt.save()
             
             
