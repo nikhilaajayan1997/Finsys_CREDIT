@@ -38046,12 +38046,16 @@ def addpurchasecredit(request):
                 next_id = cursor.fetchone()[0]
         # except:
         #     print("error occured")
-        if salescreditnote.objects.all().exists():
+        if salescreditnote.objects.filter(reference_number=1).exists():
             credit_obj=salescreditnote.objects.get(reference_number=1)
             cred_no=credit_obj.credit_no
     
-        context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':next_id,'banks':banks,'cred_no':cred_no} 
-        return render(request,'app1/add_credit_note.html',context)
+            context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':next_id,'banks':banks,'cred_no':cred_no} 
+            return render(request,'app1/add_credit_note.html',context)
+        else:
+            context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':next_id,'banks':banks} 
+            return render(request,'app1/add_credit_note.html',context)
+        
     return redirect('credit_note') 
 
 def get_account_no(request):

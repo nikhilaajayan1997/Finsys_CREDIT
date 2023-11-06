@@ -1686,7 +1686,7 @@ class salescreditnote(models.Model):
     subtotal = models.CharField(max_length=100,null=True)
     cgst=models.TextField(max_length=100,null=True,blank=True)
     sgst=models.TextField(max_length=100,null=True,blank=True)
-    igst=models.TextField(max_length=100,null=True,blank=True)
+    igst=models.TextField(max_length=100,null=True,blank=True) 
     shipping_charge = models.CharField(max_length=100,null=True,blank=True)
     adjustment = models.CharField(max_length=100,null=True,blank=True)
     taxamount = models.CharField(max_length=100,null=True)
