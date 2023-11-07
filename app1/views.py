@@ -38273,8 +38273,10 @@ def viewcredit(request,id):
         print(pcrd.customer.split(" ")[0])
         cust = customer.objects.get(customerid = pcrd.customer.split(" ")[0])
         pcrd1 = salescreditnote1.objects.all().filter(scredit=id)
+        billno1=pcrd.billno.split(" ")[1]
+        print(billno1)
         # print("sdfdfds")
-        return render(request,'app1/viewcreditnote.html',{'cmp1': cmp1,'pcrd':pcrd,'pdeb':pcrd1, 'cust' : cust})
+        return render(request,'app1/viewcreditnote.html',{'cmp1': cmp1,'pcrd':pcrd,'pdeb':pcrd1,'cust':cust,'billno1':billno1})
     return redirect('credit_note')
 
 def render_pdf_credit(request,id):
@@ -38346,6 +38348,7 @@ def editcreditnote(request, id):
     pbill = purchasebill.objects.all()  
     item = itemtable.objects.all() 
     d = pcrd.creditdate
+
     billno1=pcrd.billno.split(" ")[1]
     billno2=pcrd.billno.split(" ")[0]
     print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
@@ -38440,8 +38443,8 @@ def editcreditfun(request,id):
             pdebt.taxamount=taxamount
             pdebt.grandtotal=grandtotal
             pdebt.cgst=CGST
-            pdebt.cgst=SGST
-            pdebt.cgst=IGST
+            pdebt.sgst=SGST
+            pdebt.igst=IGST
             pdebt.adjustment=request.POST.get('adj')
             pdebt.balance=request.POST.get('balance')
             pdebt.payment_method=request.POST.get('select_payment')
@@ -38504,7 +38507,7 @@ def editcreditfun(request,id):
         
     return redirect('/') 
 
-@login_required(login_url='regcomp')
+@login_required(login_url='regcomp') 
 def deletecredit(request, id):
     if 'uid' in request.session:
         if request.session.has_key('uid'):

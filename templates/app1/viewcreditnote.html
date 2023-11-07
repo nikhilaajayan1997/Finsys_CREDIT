@@ -460,12 +460,21 @@
                                 <div class="col-md-3 mt-3">
                                     <p class="mb-0">{{ pcrd.reference_number}}</p>
                                 </div>
+                                {% if pcrd.billno == '3 0' %}
+                                <div class="col-md-3 mt-3 vl">
+                                    <h6 class="mb-0"></h6>
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    <p class="mb-0"></p>
+                                </div>
+                                {% else %}
                                 <div class="col-md-3 mt-3 vl">
                                     <h6 class="mb-0">Invoice #</h6>
                                 </div>
                                 <div class="col-md-3 mt-3">
-                                    <p class="mb-0">{{pcrd.billno}}</p>
+                                    <p class="mb-0">{{billno1}}</p>
                                 </div>
+                                {% endif %}
                                 
                                 
                             </div>
@@ -492,6 +501,13 @@
                                 </div>
                                 
                                 {% elif pcrd.payment_method == 'Cash' %}
+                                <div class="col-md-3 mt-3 vl">
+                                    
+                                </div>
+                                <div class="col-md-3 mt-3">
+                                    
+                                </div>
+                                {% elif pcrd.payment_method == 'no_option' %}
                                 <div class="col-md-3 mt-3 vl">
                                     
                                 </div>
@@ -594,31 +610,31 @@
                                 <h6>{{pcrd.taxamount }}</h6>
                             </div>
                             
-                            {% if pcrd.igst != 0.00 %}
+                            {% if pcrd.igst != 0 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">IGST</h5>
                                 <h6>{{ pcrd.igst }}</h6>
                             </div>
                             {%endif%}
-                            {% if pcrd.cgst != 0|floatformat:2 %}
+                            {% if pcrd.cgst != 0 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">CGST</h5>
                                 <h6>{{ pcrd.cgst }}</h6>
                             </div>
                             {%endif%}
-                            {% if pcrd.sgst != 0|floatformat:2 %}
+                            {% if pcrd.sgst != 0 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">SGST</h5>
                                 <h6>{{ pcrd.sgst }}</h6>
                             </div>
                             {%endif%}
-                            {% if  pcrd.shipping_charge != 0|floatformat:2 %}
+                            {% if  pcrd.shipping_charge != 0 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">Shipping Charge</h5>
                                 <h6>{{ pcrd.shipping_charge}}</h6>
                             </div>
                             {% endif %}
-                            {% if  pcrd.adjustment != 0|floatformat:2 %}
+                            {% if  pcrd.adjustment != 0 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">Adjustment</h5>
                                 <h6>{{ pcrd.adjustment}}</h6>
@@ -712,7 +728,7 @@
                                            <p>Credit Note  </p>
                                        </div>
                                        <div class="position-relative">
-                                           <p> CN - <span>{{ pcrd.credit_no }}</span></p>
+                                           <p><span>{{ pcrd.credit_no }}</span></p>
                                        </div>
                                        <div class="position-relative">
                                            <p> </p>
@@ -747,7 +763,7 @@
                                            </div>
                                            <div class="col-5">
                                             
-                                               <p>Ref# : <span>{{ pcrd.billno }}</span></p>
+                                               <p>Ref# : <span>{{ pcrd.reference_number }}</span></p>
                                            </div>
                                        </div>
                                    </div>
@@ -868,7 +884,7 @@
                                        <p>Credit Note  </p>
                                    </div>
                                    <div class="position-relative">
-                                       <p> CN - <span>{{ pcrd.credit_no }}</span></p>
+                                       <p> <span>{{ pcrd.credit_no }}</span></p>
                                    </div>
                                    <div class="position-relative">
                                        <p> </p>
@@ -903,7 +919,7 @@
                                        </div>
                                        <div class="col-5">
                                         
-                                           <p>Ref# : <span>{{ pcrd.billno }}</span></p>
+                                           <p>Ref# : <span>{{ pcrd.reference_number }}</span></p>
                                        </div>
                                    </div>
                                </div>
@@ -1022,7 +1038,7 @@
                                
                                <div style="color: white;margin-left: 80%;margin-top: -4%;padding-top: 1%;padding-bottom: 6%;">
                                    <p style="color: white">Credit Note No: </p><br>
-                                   <p style="color: white"> CN - <span>{{ pcrd.credit_no }}</span></p>
+                                   <p style="color: white"><span>{{ pcrd.credit_no }}</span></p>
                                </div>
                                <div class="position-relative">
                                    <p> </p>
@@ -1066,7 +1082,7 @@
                                    </div>
                                    <div class="col-5">
                                     
-                                       <p>Ref# : <span>{{ pcrd.billno }}</span></p>
+                                       <p>Ref# : <span>{{ pcrd.reference_number }}</span></p>
                                    </div>
                                </div>
                            </div>
@@ -1228,8 +1244,8 @@
                                     <div class="col-sm-12 col-lg-12 col-md-12">
                                         <p class="text-dark" style="font-size: small;"><span class="text-black" style="font-size:medium;">invoice to :</span> <br>
                                         
-                                          {{ cust.firstname }} {{ cust.lastname }} <br>{{ pcrd.address }} <br><span class="text-black " style="font-size: medium;">Credit date:</span> <br> {{pcrd.credit_date|date:'d-m-Y' }} </p>
-                                         <p class="text-dark" style="font-size: small;margin-left: 70%;margin-top: -20%;"><span class="text-black" style="font-size: medium;">Credit no:</span><br>no data</p>
+                                          {{ cust.firstname }} {{ cust.lastname }} <br>{{ pcrd.address }} <br><span class="text-black " style="font-size: medium;">Credit date:</span> <br> {{pcrd.creditdate|date:'d-m-Y' }} </p>
+                                         <p class="text-dark" style="font-size: small;margin-left: 70%;margin-top: -20%;"><span class="text-black" style="font-size: medium;">Credit no:</span><br>{{pcrd.credit_no}}</p>
         
         
         
@@ -1280,20 +1296,20 @@
                                             {% if pcrd.cgst != 0 %}
                                             <tr>
                                                 <td class="text-right text-dark" tyle="font-size: smaller;">CGST:</td>
-                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">0</td>
+                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">{{pcrd.cgst}}</td>
                                             </tr>
                                             {% endif %}
                                                
                                             {% if pcrd.sgst != 0 %}
                                             <tr>
                                                 <td class="text-right text-dark" style="font-size: smaller;">SGST:</td>
-                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">0</td>
+                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">{{pcrd.sgst}}</td>
                                             </tr>
                                             {% endif %}
                                             {% if pcrd.igst != 0 %}
                                             <tr>
                                                 <td class="text-right text-dark" style="font-size: smaller;">IGST:</td>
-                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">0</td>
+                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">{{pcrd.igst}}</td>
                                             </tr>
                                             {% endif %}
                                             {% if pcrd.shipping_charge != 0 %}
@@ -1305,7 +1321,7 @@
                                             {% if pcrd.adjustment != 0 %}
                                             <tr>
                                                 <td class="text-right text-dark" style="font-size: smaller;">Adjustment:</td>
-                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">0</td>
+                                                <td class="text-right text-dark" style="text-align: end;font-size: smaller;">{{pcrd.adjustment}}</td>
                                             </tr>
                                             {% endif %}
                                             <tr>

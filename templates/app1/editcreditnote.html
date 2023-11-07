@@ -1696,6 +1696,7 @@ for(i = 1; i<=roinc;i++){
                     document.getElementById('igst1').style.display = 'flex';
 
                 }
+                calc();
                     
             });
 
@@ -1964,24 +1965,25 @@ for(i = 1; i<=roinc;i++){
 
         function test(){
                      
-            var bc = $("#plosu").val();
-            var compstate = $("#cmpstate").val();
-            d=0
-            if (bc == compstate  ) {
-                gst = taxamount/2
-                $('#cgst').val(parseFloat(gst.toFixed(2)));
-                $('#sgst').val(parseFloat(gst.toFixed(2)));
-                $('#igst').val(parseFloat(d.toFixed(2)));
-            }
-                
-            if (bc != "{{ cmp1.state }}"  ) {
-                $('#igst').val(taxamount.toFixed(2));
-                $('#cgst').val(d.toFixed(2));
-                $('#sgst').val(d.toFixed(2));
-            }
+                     var bc = $("#plosu").val();
+                     var compstate = $("#cmpstate").val();
+                     d=0
+                     if (bc == compstate  ) {
+                         gst = taxamount/2
+                          $('#cgst').val(gst.toFixed(2));
+                         $('#sgst').val(gst.toFixed(2));
+                         $('#igst').val(d.toFixed(2));
+                     }
+                         
+                     if (bc != "{{ cmp1.state }}"  ) {
+                         $('#igst').val(taxamount.toFixed(2));
+                         $('#cgst').val(d.toFixed(2));
+                         $('#sgst').val(d.toFixed(2));
+                     }
+         
+                    
 
-           
-        }
+                 }
         function showinnum(divId, element) {
             if (element.value) {
                 document.getElementById(divId).innerHTML = "Debit Note " + element.value;
