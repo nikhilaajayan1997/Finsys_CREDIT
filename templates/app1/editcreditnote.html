@@ -313,7 +313,7 @@ window.onload=function(){
                                         <td style="width: 20%;">
                                             <div class="d-flex">
                                                 <select name='items[]' id="product{{forloop.counter}}" class="form-control product">
-                                                    <option value="{{ pro.items }}" selected>{{ pro.items }}</option>
+                                                    <option value="{{ pro.items }}">{{ pro.items }}</option>
                                                     {% for i in item %}
                                                         <option value="{{ i.name }}">
                                                             {{ i.name }}
@@ -1641,32 +1641,30 @@ for(i = 1; i<=roinc;i++){
                 );
             });
 
-                $('.product').each(function(index, dropdown) {
-                    var row = $(dropdown).closest('.items-table-body'); // Assuming each row has a class 'item-row'
-                    $.ajax({
-                        url: "{% url 'item_dropdown' %}",
-                        type: "GET",
-                        dataType: "json",
-                        data: row.find('select').serialize(),
-                        csrfmiddlewaretoken: '{{ csrf_token }}',
+            // $('.product').each(function(index, dropdown) {
+            //         var row = $(dropdown).closest('.items-table-body'); // Assuming each row has a class 'item-row'
+            //         $.ajax({
+            //             url: "{% url 'item_dropdown' %}",
+            //             type: "GET",
+            //             dataType: "json",
+            //             data: row.find('select').serialize(),
+            //             csrfmiddlewaretoken: '{{ csrf_token }}',
 
-                        success: function(data) {
-                            var dropdown = $('.product');
-                            dropdown.empty();
-                            // dropdown.append(`<option selected>Select Item</option>`);
-                            $.each(data, function(key, value) {
-                            
-                                dropdown.append($('<option></option>').attr('value', key).text(value).val(value));
-                                // dropdown.append($('<option class="text-dark"></option>').attr('value', key).text(value[0]).val(value[1]));
-                            });
+            //             success: function(data) {
+            //                 var dropdown = $('.product');
+            //                 dropdown.empty();
+            //                 $.each(data, function(key, value) {
+            //                     // dropdown.append($('<option></option>').attr('value', key).text(value).val(value));
+            //                     dropdown.append($('<option class="text-dark"></option>').attr('value', key).text(value[0]).val(value[1]));
+            //                 });
 
-                        },
-                        error: function(xhr, status, error) {
-                        console.error(xhr.responseText);
-                        }
-                    });
+            //             },
+            //             error: function(xhr,status,error) {
+            //             console.error(xhr.responseText);
+            //             }
+            //         });
                 
-                });      
+            //     });      
             
 
         });
@@ -2154,7 +2152,7 @@ for(i = 1; i<=roinc;i++){
                     success: function(data) {
                         var dropdown = $('.product');
                         dropdown.empty();
-                        dropdown.append(`<option selected>Select Item</option>`);
+                        // dropdown.append(`<option selected>Select Item</option>`);
                         $.each(data, function(key, value) {
                         
                             dropdown.append($('<option></option>').attr('value', key).text(value).val(value));
