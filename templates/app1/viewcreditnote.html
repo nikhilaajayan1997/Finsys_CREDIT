@@ -327,18 +327,18 @@
                     <hr>
                     
                     <nav class="navbar navbar-expand-lg navbar-light" style="background-color:rgba(0,0,0,.01);">
-                    <a style="padding: 10px; cursor: pointer; font-size: large;" onclick="showDetails()" >Overview</a>
+                        <a style="padding: 10px; cursor: pointer; font-size: large;" onclick="showDetails()" >Overview</a>
                     <a style="padding: 10px; cursor: pointer; font-size: large;" onclick="showTemplates()">Templates</a>
-                    <a style="padding: 10px; cursor: pointer; font-size: large;" onclick="showSlip()" id="sliplink" >Order Slip</a>
+                    <a style="padding: 10px; cursor: pointer; font-size: large;" id="toggleTemplate4" onclick="showSlip(),toggleTemplate('whatToPrint4','toggleTemplate4')"  >Order Slip</a>
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
                         <div class="collapse navbar-collapse" id="navbarScroll">
                             <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
                                 <li class="nav-item active" >
-                                <a class="nav-link text-light  btn btn-outline-info  text-grey p-1" role="button" id="templatePrintButton"  onclick="printSection('slipdiv')" >&nbsp;&nbsp;Print&nbsp;&nbsp;</a>
+                                <a class="nav-link text-light  btn btn-outline-info  text-grey p-1" role="button" id="templatePrintButton"  onclick="printSection('whatToPrint')" >&nbsp;&nbsp;Print&nbsp;&nbsp;</a>
                                 </li>
-                                <li class="nav-item mx-1">
+                                <li class="nav-item mx-1"> 
                                     <a class="nav-link text-light btn btn-outline-info  text-grey p-1" role="button" href="{% url 'render_pdf_credit' pcrd.screditid %}">
                                         &nbsp;&nbsp;PDF&nbsp;&nbsp;
                                     </a>
@@ -465,7 +465,7 @@
                                 <div class="col-md-3 mt-3">
                                     <p class="mb-0">{{ pcrd.credit_no }}</p>
                                 </div>
-                                <div class="col-md-3 mt-3 vl"> 
+                                <div class="col-md-3 mt-3 vl">
                                     <h6 class="mb-0">Date</h6>
                                 </div>
                                 <div class="col-md-3 mt-3">
@@ -630,31 +630,31 @@
                                 <h6>{{pcrd.taxamount }}</h6>
                             </div>
                             
-                            {% if pcrd.igst != 0 %}
+                            {% if pcrd.igst != 0|floatformat:2 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">IGST</h5>
                                 <h6>{{ pcrd.igst }}</h6>
                             </div>
                             {%endif%}
-                            {% if pcrd.cgst != 0 %}
+                            {% if pcrd.cgst != 0|floatformat:2 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">CGST</h5>
                                 <h6>{{ pcrd.cgst }}</h6>
                             </div>
                             {%endif%}
-                            {% if pcrd.sgst != 0 %}
+                            {% if pcrd.sgst != 0|floatformat:2 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">SGST</h5>
                                 <h6>{{ pcrd.sgst }}</h6>
                             </div>
                             {%endif%}
-                            {% if  pcrd.shipping_charge != 0 %}
+                            {% if  pcrd.shipping_charge != 0|floatformat:0 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">Shipping Charge</h5>
                                 <h6>{{ pcrd.shipping_charge}}</h6>
                             </div>
                             {% endif %}
-                            {% if  pcrd.adjustment != 0 %}
+                            {% if  pcrd.adjustment != 0|floatformat:0 %}
                             <div class="d-flex justify-content-between mb-4">
                                 <h5 class="">Adjustment</h5>
                                 <h6>{{ pcrd.adjustment}}</h6>
@@ -669,59 +669,95 @@
                         </div>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-lg-12 col-md-12 col-sm-12">
-                        <hr class="my-4">
-                            <div class="col-md-5 mt-3">
-                                <h5 class="mb-0">Item's Details</h5>
-                            </div>
-                            <div class="col-md-12 col-lg-12 col-sm-12">
-                                <table class="table table-bordered" >
-                                    <thead style="background-color: rgba(0, 0, 0, 0.4);">
-                                        <tr>
-                                            <th>Items</th>
-                                        <th>Hsn</th>
-                                        <th>Rate</th>
-                                        <th>Quantity</th>
-                                        <th>Tax</th>
-                                        <th>Discount</th>
-                                        <th>Total</th>
+                  <hr>
+ <!-- ............................................                  -->
 
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for pordr in pdeb %}
-                                               <tr>
-                                                   <td class="text-center" style="color:#bdbbbb">{{ pordr.items }}</td>
-                                                   <td class="text-center" style="color:#bdbbbb">{{ pordr.hsn }}</td>
-                                                   <td class="text-center" style="color:#bdbbbb">{{ pordr.price }}</td>
-                                                   <td class="text-center" style="color:#bdbbbb">{{ pordr.quantity }}</td>
-                                                   <td class="text-center" style="color:#bdbbbb">{{ pordr.tax}} %</td>
-                                                   <td class="text-center" style="color:#bdbbbb">{{ pordr.discount|default:0}}</td>
-                                                   <td class="text-center" style="color:#bdbbbb">{{ pordr.total }}</td>
-                                               </tr>
-                                           {% endfor %} 
+ <div class="row mb-4 d-flex justify-content-between align-items-center">
+    <div class="col-md-12 mt-3">
+       <h5 style="border-bottom: 1px solid rgba(128, 128, 128, 0.6); width: fit-content;">Product Details</h5>
 
-                                    </tbody>
+       {% for pordr in pdeb %}
+           <div class="row mb-4 d-flex justify-content-between align-items-center">
+            
+               <div class="col-md-2 mt-3">
+                   <h6 class="mb-0">Product</h6>
+               </div>
+               <div class="col-md-2 mt-3">
+                   <p class="mb-0 text-right">{{pordr.items}}</p>
+               </div>
 
-                                </table>
+               <div class="col-md-2 mt-3 vl">
+                   <h6 class="mb-0">HSN</h6>
+               </div>
+               <div class="col-md-2 mt-3">
+                   <p class="mb-0 text-right">{{pordr.hsn}}</p>
+               </div>
+                 <div class="col-2"></div>
+                 <div class="col-2"></div>
 
-                            </div>
+               
+           </div>
+           <div class="row mb-4 d-flex justify-content-between align-items-center">
+               <div class="col-md-2 mt-3">
+                   <h6 class="mb-0">Rate</h6>
+               </div>
+               <div class="col-md-2 mt-3">
+                   <p class="mb-0 text-right">{{ pordr.price }}</p>
+               </div>
+               <div class="col-md-2 mt-3 vl">
+                   <h6 class="mb-0">Quantityt</h6>
+               </div>
+               <div class="col-md-2 mt-3">
+                   <p class="mb-0 text-right">{{pordr.quantity}} %</p>
+               </div>
+               <div class="col-2"></div>
+                 <div class="col-2"></div>
 
+           </div>
+           <div class="row mb-4 d-flex justify-content-start align-items-center">
+               <div class="col-md-2 mt-3"> 
+                   <h6 class="mb-0">Tax</h6>
+               </div>
+               <div class="col-md-2 mt-3">
+                   <p class="mb-0 text-right">{{pordr.tax}}</p>
+               </div>
+               <div class="col-md-2 mt-3 vl"> 
+                   <h6 class="mb-0">Discount</h6>
+               </div>
+               <div class="col-md-2 mt-3">
+                   <p class="mb-0 text-right">{{pordr.discount}}</p>
+               </div>
+               
+           </div>
+           <div class="row mb-4 d-flex justify-content-between align-items-center">
+               <div class="col-md-2 mt-3">
+                   <h6 class="mb-0"></h6>
+               </div>
+               <div class="col-md-2 mt-3">
+                   <p class="mb-0 text-right"></p>
+               </div>
+               <div class="col-md-2 mt-3">
+                   <h6 class="mb-0 ">Total</h6>
+               </div>
+               <div class="col-md-2 mt-3">
+                   <p class="mb-0 text-right">{{pordr.grandtotal}}</p>
+               </div>
+               <div class="col-2"></div>
+                 <div class="col-2"></div>
 
-                    </div>
-                  </div>
-
-            </div>
-
-
+           </div>
+           <hr class="my-4" style="width: 50%;">
+       {% endfor %}
+   </div>
+ </div>
+</div>
                  <!-- ...................................   slip .......................... -->
 
 
   
-  <div id="slipdiv"  style="background-color: #243e54; border-radius: 2vh;display:none;">
+  <div id="whatToPrint4"  style="background-color: #243e54; border-radius: 2vh;display:none;">
      <div class="p-5"  >
-        <div class="my-5 page">
+        <div class="my-5 page" size="A4">
             <div class="row" style="margin-top: 20%;" id="printslip">
 
                 <div class="col-md-3"></div>
@@ -1324,11 +1360,11 @@
                                            </tr>
                                            <tr class="gstrow d-none">
                                                <td style="color:black">CGST</td>
-                                               <td style="color:black" id="cgst"></td>
+                                               <td style="color:black" id="cgst">{{pcrd.cgst}}</td>
                                            </tr>
                                            <tr class="gstrow d-none">
                                                <td style="color:black">SGST</td>
-                                               <td style="color:black" id="sgst"></td>
+                                               <td style="color:black" id="sgst">{{pcrd.sgst}}</td>
                                            </tr>
                                       
                                            <tr>
@@ -1487,11 +1523,11 @@
                                        </tr>
                                        <tr class="gstrow d-none">
                                            <td style="color:black">CGST</td>
-                                           <td style="color:black" id="cgst"></td>
+                                           <td style="color:black" id="cgst">{{pcrd.cgst}}</td>
                                        </tr>
                                        <tr class="gstrow d-none">
                                            <td style="color:black">SGST</td>
-                                           <td style="color:black" id="sgst"></td>
+                                           <td style="color:black" id="sgst">{{pcrd.sgst}}</td>
                                        </tr>
                                   
                                        <tr>
@@ -1723,9 +1759,12 @@
     <script>
         function showTemplates() {
             document.getElementById('templatesToPrintSection').style.display = 'block';
+            // document.getElementById('whatToPrint').style.display = 'block';
+
             document.getElementById('details').style.display = 'none';
             document.getElementById("print_slip").style.display='none';
-            document.getElementById('slipdiv').style.display='none';
+            document.getElementById('whatToPrint4').style.display='none';
+            toggleTemplate('whatToPrint','toggleTemplate1');
 
 
     }
@@ -1733,7 +1772,7 @@
         document.getElementById('templatesToPrintSection').style.display = 'none';
         document.getElementById('details').style.display = 'block';
         document.getElementById("print_slip").style.display='none';
-        document.getElementById('slipdiv').style.display='none';
+        document.getElementById('whatToPrint4').style.display='none';
 
 
 
@@ -1741,7 +1780,7 @@
     function showSlip(){
                 document.getElementById('print_slip').style.display='none';
                 document.getElementById('templatesToPrintSection').style.display='none';
-                document.getElementById('slipdiv').style.display='block';
+                document.getElementById('whatToPrint4').style.display='block';
                 document.getElementById('details').style.display='none';
                 
             }
@@ -1751,13 +1790,13 @@
         document.getElementById("print_slip").style.display='block';
         document.getElementById('templatesToPrintSection').style.display = 'none';
         document.getElementById('details').style.display = 'none';
-        document.getElementById('slipdiv').style.display='none';
+        document.getElementById('whatToPrint4').style.display='none';
     }
 </script>
 
 <script>
-    function printfun()
-    {
+    function printfun(){
+
         print4 = document.getElementById('slipdiv');
         if (print4.style.display !== 'none'){
                 var printContents=document.getElementById("slipdiv").innerHTML; 
@@ -1765,6 +1804,9 @@
         else{
             var printContents = document.getElementById("whatToPrint3").innerHTML;
         }
+
+
+
         var $printerDiv = $('<div class="printContainer"></div>'); // create the div that will contain the stuff to be printed
         $printerDiv.html(printContents); // add the content to be printed
         $('body').append($printerDiv).addClass("printingContent"); // add the div to body, and make the body aware of printing (we apply a set of css styles to the body to hide its contents)
@@ -1774,20 +1816,29 @@
         $('body').removeClass("printingContent");
     }
 
+
+   
 </script>
    
 
 <script>
      
-    function toggleTemplate(templateId,buttonId){
-
+    function toggleTemplate(templateId,buttonId)
+    {
+       
+            
             $('.printTemplates').css('display','none');
             $('#'+templateId).css('display','block');
             $('.templateToggleButtons').removeClass('active');
             $('#'+buttonId).addClass('active');
+            
+            
             $("#templatePrintButton").attr("onclick","printSection('"+templateId+"')");
+            
             document.getElementById('page-content').scrollIntoView();
        
+       
+
     }
 </script>
 
@@ -1868,7 +1919,9 @@
 <script>
     function printSection(sectionId) {
         var printContents = document.getElementById(sectionId).innerHTML;
-        
+        printContents.innerHTML='';
+
+
         var originalContents = document.body.innerHTML;
     
         document.body.innerHTML = printContents;

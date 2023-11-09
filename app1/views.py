@@ -41122,19 +41122,29 @@ def cust_details(request):
 
 @login_required(login_url='regcomp')
 def cust_dropdown(request):
-    cmp1 = company.objects.get(id=request.session['uid'])
-    options = {}
-    option_objects =customer.objects.filter(cid=cmp1)
-    for option in option_objects:
-        # x=option.title
-        # y=option.firstname
-        # z=option.lastname
-        # display_name = x+y+z
-        options[option.customerid] = [option.title,option.firstname,option.lastname]
-        # options[option.customerid] = [display_name, f"{display_name}"]
-        # options[option.id] = [option.name]
+    # cmp1 = company.objects.get(id=request.session['uid'])
+    # options = {}
+    # option_objects =customer.objects.filter(cid=cmp1)
+    # for option in option_objects:
+       
+    #     options[option.customerid] = [option.title,option.firstname,option.lastname]
+        
 
-    return JsonResponse(options)
+    # return JsonResponse(options)
+    cmp1 = company.objects.get(id=request.session['uid'])
+
+    options = {}
+    option_objects = customer.objects.filter(cid = cmp1)
+    id_list = []
+    title_list = []
+    first_name = []
+    last_name = []
+    for option in option_objects:
+        id_list.append(option.customerid)
+        title_list.append(option.title)
+        first_name.append(option.firstname)
+        last_name.append(option.lastname)
+    return JsonResponse({'id_list':id_list,'title_list':title_list,'first_name':first_name,'last_name':last_name})
 
 #render chart acnt overview page
 @login_required(login_url='login')

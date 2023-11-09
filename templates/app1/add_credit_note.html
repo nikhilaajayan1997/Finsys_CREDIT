@@ -1550,6 +1550,10 @@
                         document.getElementById('item_label').style.color="red"
                         document.getElementById('item_label').innerHTML=data6;
                     }
+                    else
+                    {
+                        document.getElementById('item_label').innerHTML="";
+                    }
 
                 },
                 });
@@ -1607,9 +1611,13 @@
 
                      if(data6 == 'different tax selected')
                     {
-                        document.getElementById('item_label').innerHTML=""
-                        document.getElementById('item_label').style.color="red"
+                        document.getElementById('item_label').innerHTML="";
+                        document.getElementById('item_label').style.color="red";
                         document.getElementById('item_label').innerHTML=data6;
+                    }
+                    else
+                    {
+                        document.getElementById('item_label').innerHTML="";
                     }
                 },
                 });
@@ -1830,16 +1838,34 @@
                 data: $(this).serialize(),
                 csrfmiddlewaretoken: '{{ csrf_token }}',
 
-                success: function(data) {
+                success: function(response) {
+                    id_list = response.id_list
+                    title_list = response.title_list
+                    first_name = response.first_name
+                    last_name = response.last_name
+                    console.log('hellooooooooooooooooooooo')
+
                     var dropdown = $('#customer');
-                 +   dropdown.empty();
+                    dropdown.empty();
                 dropdown.append(`<option selected>Select Customer</option>`);
-                    $.each(data, function(key, value) {
-                        console.log(value)
-                        dropdown.append($('<option></option>').attr('value', key).text(value[0] + " " +value[1] + " "+ value[2]).val(key + " " +value[1] + " "+ value[2]));
-                        // dropdown.append($('<option></option>').attr('value', key).text(value[1]).val(key));
-                        // dropdown.append($('<option></option>').attr('value', key).text(value).val(key));
-                    });
+
+                let select = document.getElementById("customer");
+             for(let i=0; i<id_list.length;i++){
+            // Create a new option element    
+            let newOption = document.createElement("option");
+            newOption.text = title_list[i] + ' ' + first_name[i] + ' ' + last_name[i];
+            newOption.value = id_list[i] + ' ' + first_name[i] + ' ' + last_name[i]; // Set a value for the new option
+             console.log('hellooooooooooooooooooooo')
+             console.log(newOption.value)
+            // Append the new option to the select field
+            select.appendChild(newOption);
+        }
+
+                    // $.each(data, function(key, value) {
+                    //     console.log(value)
+                        // dropdown.append($('<option></option>').attr('value', key).text(value[0] + " " +value[1] + " "+ value[2]).val(key + " " +value[1] + " "+ value[2]));
+                        
+                    // });
                 },
                 error: function(xhr, status, error) {
                 console.error(xhr.responseText);

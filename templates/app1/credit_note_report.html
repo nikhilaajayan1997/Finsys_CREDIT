@@ -101,7 +101,7 @@
                     </div>
                     <div class="btn-group col-md-1" style="float: right;">
     
-                        <a class="btn btn-outline-info text-grey" onclick="ExportToExcel('xlsx')"> Excel</a>
+                        <a class="btn btn-outline-info text-grey" id="exportBtn" > Excel</a>
                     </div>
     
                     <div class="bar">
@@ -145,7 +145,7 @@
                    
                     <div class="container-fluid" id="pdf-card">
     
-                    <table class="table table-responsive-md mt-4" id="tbl_exporttable_to_xls">
+                    <table class="table table-responsive-md mt-4" id="table">
                         <thead>
                             <tr style="text-align: center;">
                                 <th>DATE</th>
@@ -202,14 +202,27 @@
         
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
-    <script type="text/javascript">function ExportToExcel(type, fn, dl) {
+    <script>
+        document.getElementById("exportBtn").addEventListener("click", function () {
+        const Table = document.getElementById("table");
+        const ws = XLSX.utils.table_to_sheet(Table);
+        ws['!cols'] = [{ wch: 15 },{ wch: 15 },{ wch: 15 },{ wch: 15 },{ wch: 15 },{ wch: 15 }];
+        ws['!rows'] = [{ hpt: 30 }];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+        XLSX.writeFile(wb, "credit_note.xlsx"); 
+      });
+
+    </script>
+
+    <!-- <script type="text/javascript">function ExportToExcel(type, fn, dl) {
             var elt = document.getElementById('tbl_exporttable_to_xls');
             var wb = XLSX.utils.table_to_book(elt, { sheet: "sheet1" });
             return dl ?
                 XLSX.write(wb, { bookType: type, bookSST: true, type: 'base64' }) :
                 XLSX.writeFile(wb, fn || ('debitnotereport.' + (type || 'xlsx')));
         }
-    </script> 
+    </script>  -->
 <script>
     var $rows = $('.table tbody tr');
             $('#search').keyup(function() {
@@ -266,7 +279,7 @@
             const headerDiv = document.createElement('div');
             headerDiv.style.textAlign = 'center';
             headerDiv.style.marginBottom = '20px';
-            headerDiv.innerHTML = `<p> ${companyName}</p><h1>DEBITNOTE REPORT</h1><p>From: ${fromDate} To:  ${toDate}</p>`;
+            headerDiv.innerHTML = `<p> ${companyName}</p><h1>CREDIT NOTE REPORT</h1><p>From: ${fromDate} To:  ${toDate}</p>`;
     
             printWindow.document.body.insertBefore(headerDiv, pdfCardClone[0]);
             
@@ -295,7 +308,7 @@
                 ${companyName}
             </div>
             <div style="text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 10px; color: black;">
-                PURCHASE REPORT
+                CREDIT NOTE REPORT
             </div>
             <div style="text-align: center; font-size: 12px; color: black;">
                ${fromDate} &nbsp; ${toDate}
@@ -320,7 +333,7 @@
                             {% for p in pdebit %}
                             <tr class="table-row " data-href="" style="text-align: center;color:black;border: 1px solid black;">
                                 <td style="text-align: center;color:black;border: 1px solid black;">{{ p.creditdate | date:'Y-m-d' }}</td>
-                                <td style="text-align: center;color:black;border: 1px solid black;">DN - {{p.credit_no}}</td>
+                                <td style="text-align: center;color:black;border: 1px solid black;"> {{p.credit_no}}</td>
                                 <td style="text-align: center;color:black;border: 1px solid black;">{{ p.customer }}</td>
                                 <td style="text-align: center;color:black;border: 1px solid black;">{{ p.email }}</td>
                                 <td style="text-align: center;color:black;border: 1px solid black;">{{ p.grandtotal }}</td>
@@ -338,7 +351,7 @@
             var opt =
             {
                 margin: 1,
-                filename: 'Debinote_Report' + '.pdf',
+                filename: 'Creditnote_Report' + '.pdf',
                 image: { type: 'png', quality: 1.0 },
                 html2canvas: { scale: 3, useCORS: true, backgroundColor: null },
                 jsPDF: { unit: 'in', format: 'a3', orientation: 'portrait' }
