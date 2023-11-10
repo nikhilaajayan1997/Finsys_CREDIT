@@ -119,7 +119,7 @@
                             <div class="row">
                                 <div class="col-md-5 mt-3">
                                     <label for="validationCustom02">Reference Number</label>
-                                    <input type="number" class="form-control" name="referenceNumber" id="referenceNumber" value="{{next_id}}" readonly>
+                                    <input type="number" class="form-control" style="background-color: #3d5468;" name="referenceNumber" id="referenceNumber" value="{{next_id}}" readonly>
                                 </div>
                                 <div class="col-md-5 mt-3" >
                                     <label for="validationCustom02" id="credit_note_no" >Credit Note Number </label>  <label for="" style="color: rgb(190, 190, 190);" id="credit_span">( Credit number format {{cred_no}} )</label>
@@ -182,6 +182,7 @@
                     <div class="row mt-4">
                         <div class="col-md-12 mt-3">
                             <div class="table-responsive">
+
                                 <table class="table table-bordered table-hover" id="tab_logic">
                                     <thead>
                                     <tr>
@@ -218,7 +219,7 @@
                                             class="form-control hsn"/>
                                         </td>
                                         <td>
-                                               
+                                            <input  type="number" name="stock_quantity[]" id="stock_qty1" >
                                             <input type="number" name='quantity[]'  style="margin-top: 21px;" placeholder='Enter Qty' id="qty1" class="form-control qty" step=0 min=0>
                                                 <div class="d-flex"><span>Available Qty :</span> <span id="qtyspan1"class=''></span></div>
                                             
@@ -274,7 +275,8 @@
                                             
                                         </td>
                                     </tr>
-                                    <label for="" id="item_label" ></label>
+                                    <label for="" id="item_label" ></label>    <input style="display: none;" type="number" name="stock_quantity_outer" id="stock_qty_outer" >
+
                                 </table>
                             </div>
                         </div>
@@ -1439,7 +1441,9 @@
                             <td>
                                 <input type="text" name='hsn[]' id="hsn${roinc}" placeholder='Enter HSN Code' class="form-control"/>
                             </td>                
-                            <td><input type="number" name='quantity[]' placeholder='Enter Qty' id="qty${roinc}" style="margin-top: 21px;" class="form-control qty" step=0 min=0>
+                            <td><input  type="number" name="stock_quantity[]" id="stock_qty${roinc}" >
+                                <input style="display: none;" type="number" name="stock_quantity[]" id="stock_qty${roinc}">  
+                                <input type="number" name='quantity[]' placeholder='Enter Qty' id="qty${roinc}" style="margin-top: 21px;" class="form-control qty" step=0 min=0>
                                 <div><span>Available Qty :</span> <span id="qtyspan${roinc}"class=''></span></div>
                             </td>                
                             <td>
@@ -1523,6 +1527,10 @@
                 
                 var n = $(this).attr("id").slice(7);
                 var x=$('#inv_no').val();
+                var tbldata = document.getElementById("tab_logic");
+                var total_rows = tbldata.rows.length;
+                var xx=document.getElementById("tab_logic");
+                
                 $.ajax({
                 url: "{% url 'itemdata' %}",
                 type : 'GET',
@@ -1540,23 +1548,58 @@
                     data5 = response.sgst
                     data6=response.mesg
                     data7=response.itm
-                    console.log(data)
+                    data8=response.tot_qty
+                    var i;
+                    var count=0
+                    console.log("successfullllllllllllllllllllllllllll");
+
+                    for( i=1; i < total_rows-1; i++)
+                    {
+                        var a1=tbldata.rows[i].cells[2].getElementsByTagName('input')[0].value;
+                        if(data == a1)
+                        {
+                            count=count+1;
+                        }
+
+                    }
+
+                        
+                   if(count == 0)
+                   {
                     document.getElementById('hsn'+n).value = data;
                     document.getElementById('qtyspan'+n).innerHTML = data2;
                     document.getElementById('unit'+n).value = data3;
-                     if(data6 == 'different item')
+                    document.getElementById('stock_qty'+n).value=data8;
+                    document.getElementById('stock_qty_outer').value=data8;
+                    console.log("haiiiiiiiiiiiiiiiiiiii")
+
+                    if(data6 == 'different item')
                     {
                         document.getElementById('item_label').innerHTML="";
                         document.getElementById('item_label').style.color="red"
                         document.getElementById('item_label').innerHTML=data6;
+                       
+
                     }
                     else
                     {
                         document.getElementById('item_label').innerHTML="";
                     }
+                   }
+                   else{
+                    console.log("ffffffffffffffffffffffffffffffffffff");
+                    document.getElementById('item_label').innerHTML="";
+                        document.getElementById('item_label').style.color="red"
+                        document.getElementById('item_label').innerHTML="item is already selected,Can't select again.But can modify quantity !!!!!!!!!!!!!!";
+                   }
+
+                   
+                    
 
                 },
                 });
+                
+                        
 
             });
 
@@ -1572,6 +1615,7 @@
                     id1 : $(this).val(),
                     id:$('#hsn'+n).val(),
                     id2:$('#product'+n).val(),
+                    tot_quan:$('#stock_qty'+n).val(),
                     invoice_no:$('#inv_no').val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
@@ -1581,9 +1625,11 @@
                     document.getElementById('item_label').innerHTML=""
                     sum=parseInt(data5)+parseInt(n1) 
                     document.getElementById('qtyspan'+n).innerHTML=sum;
+                    document.getElementById('stock_qty'+n).value=response.tot_quan;
 
 
-                     if(data6 == 'different quantity selected')
+
+                     if(data6 == 'bigger quantity selected')
                     {
                         document.getElementById('item_label').innerHTML=""
                         document.getElementById('item_label').style.color="red"

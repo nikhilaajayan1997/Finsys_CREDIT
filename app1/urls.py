@@ -829,6 +829,7 @@ urlpatterns = [
     path('get_account_no',views.get_account_no,name='get_account_no'),
     path('itemdata_qty',views.itemdata_qty,name='itemdata_qty'),
     path('itemdata_tax1',views.itemdata_tax1,name='itemdata_tax1'),
+    path('deletecreditnote/<int:pk>',views.deletecreditnote,name='deletecreditnote'),
 
 
     path('bnk_disables/<int:pk>', views.bnk_disables, name='bnk_disables'),

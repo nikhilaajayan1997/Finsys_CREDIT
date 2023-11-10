@@ -1712,6 +1712,8 @@ class salescreditnote1(models.Model):
     tax = models.CharField(max_length=100,null=True)
     discount = models.CharField(max_length=100,null=True)
     total = models.CharField(max_length=100,null=True)
+    billno=models.CharField(max_length=100,null=True)
+    rem_qty=models.CharField(max_length=100,null=True)
 
 
 
@@ -2328,3 +2330,7 @@ class repeatevry(models.Model):
 class recterm(models.Model):
     term_name = models.CharField(max_length=100)
     cid = models.ForeignKey(company, on_delete=models.CASCADE,null=True)
+
+class deletedcreditnotes(models.Model):
+    cid = models.ForeignKey(company,on_delete=models.CASCADE,null=True)
+    reference_number = models.CharField(max_length=50)

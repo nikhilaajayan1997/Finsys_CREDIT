@@ -328,7 +328,7 @@ window.onload=function(){
                                             class="form-control hsn"/>
                                         </td>
                                         <td>
-                                               
+                                            <input style="display: none;" type="number" name="stock_quantity[]" id="stock_qty1" >
                                             <input type="number" name='quantity[]' value="{{pro.quantity}}"  style="margin-top: 21px;" placeholder='Enter Qty' id="qty{{forloop.counter}}" class="form-control qty" step=0 min=0>
                                                 <div class="d-flex"><span>Available Qty :</span> <label id="qtyspan{{forloop.counter}}" class=''></label></div>
                                             
@@ -381,7 +381,7 @@ window.onload=function(){
                                     <tr>
                                         <td style="border: none;"><a class="btn btn-outline-secondary ml-1" title="Add Row" role="button" id="addrow">+</a></td>
                                     </tr>
-                                    <label for="" id="item_label" ></label>
+                                    <label for="" id="item_label" ></label>    <input style="display: none;" type="number" name="stock_quantity_outer" id="stock_qty_outer" >
                                 </table>
                             </div>
                         </div>
@@ -1705,6 +1705,9 @@ for(i = 1; i<=roinc;i++){
                 
                 var n = $(this).attr("id").slice(7);
                 var x=$('#inv_no').val();
+                var tbldata = document.getElementById("tab_logic");
+                var total_rows = tbldata.rows.length;
+                var xx=document.getElementById("tab_logic");
 
                 $.ajax({
                 url: "{% url 'itemdata' %}",
@@ -1722,20 +1725,53 @@ for(i = 1; i<=roinc;i++){
                     data4 = response.gst
                     data5 = response.sgst
                     data6=response.mesg
+                    data8=response.tot_qty
 
-                    console.log(data)
-                    
+                    var i;
+                    var count=0
+                    console.log("successfullllllllllllllllllllllllllll");
+
+                    for( i=1; i < total_rows-1; i++)
+                    {
+                        var a1=tbldata.rows[i].cells[2].getElementsByTagName('input')[0].value;
+                        if(data == a1)
+                        {
+                            count=count+1;
+                        }
+
+                    }
+
+
+                    if(count == 0)
+                   {
                     document.getElementById('hsn'+n).value = data;
                     document.getElementById('qtyspan'+n).innerHTML = data2;
                     document.getElementById('unit'+n).value = data3;
+                    document.getElementById('stock_qty'+n).value=data8;
+                    document.getElementById('stock_qty_outer').value=data8;
+                    console.log("haiiiiiiiiiiiiiiiiiiii")
+
                     if(data6 == 'different item')
                     {
                         document.getElementById('item_label').innerHTML="";
                         document.getElementById('item_label').style.color="red"
                         document.getElementById('item_label').innerHTML=data6;
+                       
+
                     }
+                    else
+                    {
+                        document.getElementById('item_label').innerHTML="";
+                    }
+                   }
+                   else{
+                    console.log("ffffffffffffffffffffffffffffffffffff");
+                    document.getElementById('item_label').innerHTML="";
+                        document.getElementById('item_label').style.color="red"
+                        document.getElementById('item_label').innerHTML="item is already selected,Can't select again.But can modify quantity !!!!!!!!!!!!!!";
+                   }
 
-
+                   
                 },
                 });
                 
@@ -1764,7 +1800,7 @@ for(i = 1; i<=roinc;i++){
                     document.getElementById('qtyspan'+n).innerHTML=sum;
 
 
-                     if(data6 == 'different quantity selected')
+                     if(data6 == 'bigger quantity selected')
                     {
                         document.getElementById('item_label').innerHTML=""
                         document.getElementById('item_label').style.color="red"
@@ -2205,6 +2241,7 @@ for(i = 1; i<=roinc;i++){
             $(document).ready(function () {
                 $('#customer').on('change', function() {
                     console.log($('#customer').val())
+                    console.log("hellllllllll00000000000")
                     $.ajax({
                         type : 'POST',
                         

@@ -370,7 +370,7 @@
                                 </li>
                                
                                 <li class="nav-item mx-1">
-                                    <a class="nav-link text-light  btn btn-outline-info  text-grey p-1" role="button" href="{% url 'deletecredit' pcrd.screditid %}">&nbsp;&nbsp;Delete&nbsp;&nbsp;</a>
+                                    <a class="nav-link text-light  btn btn-outline-info  text-grey p-1" role="button" href="{% url 'deletecreditnote' pcrd.screditid %}">&nbsp;&nbsp;Delete&nbsp;&nbsp;</a>
                                 </li>
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle text-light btn btn-outline-info " href="#" id="navbarDropdown" role="button"
@@ -414,7 +414,7 @@
             <div id="details" >
                 <div class="row g-0" >
                    
-                    <div class="col-lg-8">
+                    <div class="col-lg-8 col-md-8 col-sm-8">
                         <div class="p-5">
                             
                             <div class="row mb-4 d-flex justify-content-between align-items-center">
@@ -611,9 +611,9 @@
                             </div>
                        
                        
+                        </div>
                     </div>
-                    </div>
-                    <div class="col-lg-4 bg-grey" style="background-color: rgba(0, 0, 0, 0.4);">
+                    <div class="col-lg-4 col-md-4 col-sm-4 bg-grey" style="background-color: rgba(0, 0, 0, 0.4);">
                         <div class="p-5">
                             <h3 class="fw-bold mb-3 mt-2 pt-1">CREDIT NOTE</h3>
                             <div class="d-flex justify-content-between mb-4">
@@ -669,87 +669,87 @@
                         </div>
                     </div>
                   </div>
-                  <hr>
+                  
  <!-- ............................................                  -->
 
- <div class="row mb-4 d-flex justify-content-between align-items-center">
-    <div class="col-md-12 mt-3">
-       <h5 style="border-bottom: 1px solid rgba(128, 128, 128, 0.6); width: fit-content;">Product Details</h5>
+            <div class="row mb-4 d-flex justify-content-between align-items-center">
+                <div class="col-md-12 mt-3">
+                <h5 style="border-bottom: 1px solid rgba(128, 128, 128, 0.6); width: fit-content;">Product Details</h5>
 
-       {% for pordr in pdeb %}
-           <div class="row mb-4 d-flex justify-content-between align-items-center">
-            
-               <div class="col-md-2 mt-3">
-                   <h6 class="mb-0">Product</h6>
-               </div>
-               <div class="col-md-2 mt-3">
-                   <p class="mb-0 text-right">{{pordr.items}}</p>
-               </div>
+                {% for pordr in pdeb %}
+                    <div class="row mb-4 d-flex justify-content-between align-items-center">
+                        
+                        <div class="col-md-2 mt-3">
+                            <h6 class="mb-0">Product</h6>
+                        </div>
+                        <div class="col-md-2 mt-3">
+                            <p class="mb-0 text-right">{{pordr.items}}</p>
+                        </div>
 
-               <div class="col-md-2 mt-3 vl">
-                   <h6 class="mb-0">HSN</h6>
-               </div>
-               <div class="col-md-2 mt-3">
-                   <p class="mb-0 text-right">{{pordr.hsn}}</p>
-               </div>
-                 <div class="col-2"></div>
-                 <div class="col-2"></div>
+                        <div class="col-md-2 mt-3 vl">
+                            <h6 class="mb-0">HSN</h6>
+                        </div>
+                        <div class="col-md-2 mt-3">
+                            <p class="mb-0 text-right">{{pordr.hsn}}</p>
+                        </div>
+                            <div class="col-2"></div>
+                            <div class="col-2"></div>
 
-               
-           </div>
-           <div class="row mb-4 d-flex justify-content-between align-items-center">
-               <div class="col-md-2 mt-3">
-                   <h6 class="mb-0">Rate</h6>
-               </div>
-               <div class="col-md-2 mt-3">
-                   <p class="mb-0 text-right">{{ pordr.price }}</p>
-               </div>
-               <div class="col-md-2 mt-3 vl">
-                   <h6 class="mb-0">Quantityt</h6>
-               </div>
-               <div class="col-md-2 mt-3">
-                   <p class="mb-0 text-right">{{pordr.quantity}} %</p>
-               </div>
-               <div class="col-2"></div>
-                 <div class="col-2"></div>
+                        
+                    </div>
+                    <div class="row mb-4 d-flex justify-content-between align-items-center">
+                        <div class="col-md-2 mt-3">
+                            <h6 class="mb-0">Rate</h6>
+                        </div>
+                        <div class="col-md-2 mt-3">
+                            <p class="mb-0 text-right">{{ pordr.price }}</p>
+                        </div>
+                        <div class="col-md-2 mt-3 vl">
+                            <h6 class="mb-0">Quantityt</h6>
+                        </div>
+                        <div class="col-md-2 mt-3">
+                            <p class="mb-0 text-right">{{pordr.quantity}} %</p>
+                        </div>
+                        <div class="col-2"></div>
+                            <div class="col-2"></div>
 
-           </div>
-           <div class="row mb-4 d-flex justify-content-start align-items-center">
-               <div class="col-md-2 mt-3"> 
-                   <h6 class="mb-0">Tax</h6>
-               </div>
-               <div class="col-md-2 mt-3">
-                   <p class="mb-0 text-right">{{pordr.tax}}</p>
-               </div>
-               <div class="col-md-2 mt-3 vl"> 
-                   <h6 class="mb-0">Discount</h6>
-               </div>
-               <div class="col-md-2 mt-3">
-                   <p class="mb-0 text-right">{{pordr.discount}}</p>
-               </div>
-               
-           </div>
-           <div class="row mb-4 d-flex justify-content-between align-items-center">
-               <div class="col-md-2 mt-3">
-                   <h6 class="mb-0"></h6>
-               </div>
-               <div class="col-md-2 mt-3">
-                   <p class="mb-0 text-right"></p>
-               </div>
-               <div class="col-md-2 mt-3">
-                   <h6 class="mb-0 ">Total</h6>
-               </div>
-               <div class="col-md-2 mt-3">
-                   <p class="mb-0 text-right">{{pordr.grandtotal}}</p>
-               </div>
-               <div class="col-2"></div>
-                 <div class="col-2"></div>
+                    </div>
+                    <div class="row mb-4 d-flex justify-content-start align-items-center">
+                        <div class="col-md-2 mt-3"> 
+                            <h6 class="mb-0">Tax</h6>
+                        </div>
+                        <div class="col-md-2 mt-3">
+                            <p class="mb-0 text-right">{{pordr.tax}}</p>
+                        </div>
+                        <div class="col-md-2 mt-3 vl"> 
+                            <h6 class="mb-0">Discount</h6>
+                        </div>
+                        <div class="col-md-2 mt-3">
+                            <p class="mb-0 text-right">{{pordr.discount}}</p>
+                        </div>
+                        
+                    </div>
+                    <div class="row mb-4 d-flex justify-content-between align-items-center">
+                        <div class="col-md-2 mt-3">
+                            <h6 class="mb-0"></h6>
+                        </div>
+                        <div class="col-md-2 mt-3">
+                            <p class="mb-0 text-right"></p>
+                        </div>
+                        <div class="col-md-2 mt-3">
+                            <h6 class="mb-0 ">Total</h6>
+                        </div>
+                        <div class="col-md-2 mt-3">
+                            <p class="mb-0 text-right">{{pordr.grandtotal}}</p>
+                        </div>
+                        <div class="col-2"></div>
+                            <div class="col-2"></div>
 
-           </div>
-           <hr class="my-4" style="width: 50%;">
-       {% endfor %}
-   </div>
- </div>
+                    </div>
+                    <hr class="my-4" style="width: 50%;">
+                {% endfor %}
+            </div>
+            </div>
 </div>
                  <!-- ...................................   slip .......................... -->
 
@@ -1117,7 +1117,7 @@
                                        <div class="row bb pb-3">
                                            <div class="col-7">
                                                <p>FROM,</p>
-                                               <h5>{{cmp1.cname }}</h5>
+                                               <h5 style="color: black;font-weight: bold;">{{cmp1.cname }}</h5>
                                                <p class="address "> {{cmp1.caddress}}<br>
                                                    {{cmp1.city}},
                                                    {{cmp1.state}}<br>
@@ -1127,7 +1127,7 @@
                                            </div>
                                            <div class="col-5">
                                                <p>INVOICE TO,</p>
-                                               <h5>{{cust.title}} {{cust.firstname}} {{cust.lastname}}</h5>
+                                               <h5 style="color: black;font-weight: bold;">{{cust.title}} {{cust.firstname}} {{cust.lastname}}</h5>
                                                <p class="address col-6" style="margin-left: -14px;" > {{ pcrd.address}} </p>   
                                            </div>
                                        </div>
@@ -1149,13 +1149,13 @@
                                    <table class="table table-hover table-bordered">
                                        <thead>
                                            <tr>
-                                               <td>Items</td>
-                                               <td>HSN</td>
-                                               <td>Rate</td>
-                                               <td>Quantity</td>
-                                               <td>Tax</td>
-                                               <td>Discount</td>
-                                               <td>Total</td>
+                                               <td style="color:#000;font-weight: bold;">Items</td>
+                                               <td style="color:#000;font-weight: bold;">HSN</td>
+                                               <td style="color:#000;font-weight: bold;">Rate</td>
+                                               <td style="color:#000;font-weight: bold;">Quantity</td>
+                                               <td style="color:#000;font-weight: bold;">Tax</td>
+                                               <td style="color:#000;font-weight: bold;">Discount</td>
+                                               <td style="color:#000;font-weight: bold;">Total</td>
                                            </tr>
                                        </thead>
                                        <tbody>
@@ -1272,9 +1272,9 @@
                                <div class="col-12">
                                    <div class="row bb pb-3">
                                        <div class="col-7">
-                                           <p style="color: #311c1c;">FROM,</p>
+                                           <p style="color: #080707;">FROM,</p>
                                            <h5 style="color: rgb(8, 8, 8);font-weight: bold;">{{cmp1.cname }}</h5>
-                                           <p class="address " style="color: #311c1c;"> {{cmp1.caddress}}<br>
+                                           <p class="address " style="color: #0e0b0b;"> {{cmp1.caddress}}<br>
                                                {{cmp1.city}},
                                                {{cmp1.state}}<br>
                                                {{cmp1.pincode}}<br>
@@ -1282,20 +1282,20 @@
                                            </p>  
                                        </div>
                                        <div class="col-5">
-                                           <p style="color: #311c1c;">INVOICE TO,</p>
+                                           <p style="color: #0a0808;">INVOICE TO,</p>
                                            <h5 style="color: rgb(8, 8, 8);font-weight: bold;">{{cust.title}} {{cust.firstname}} {{cust.lastname}}</h5>
-                                           <p class="address col-6" style="margin-left: -14px;" > {{ pcrd.address}} </p>   
+                                           <p class="address col-6" style="color: rgb(8, 8, 8);margin-left: -14px;" > {{ pcrd.address}} </p>   
                                        </div>
                                    </div>
                                    <div class="row extra-info pt-3">
                                        <div class="col-7">
-                                           <p>Credit Date : {{ pcrd.creditdate|date:'d-m-Y' }} </p>
+                                           <p style="color: rgb(8, 8, 8);">Credit Date : {{ pcrd.creditdate|date:'d-m-Y' }} </p>
                                            
                                            <p class="address col-6" style="margin-left: -14px;">  </p>   
                                        </div>
                                        <div class="col-5">
                                         
-                                           <p>Ref# : <span>{{ pcrd.reference_number }}</span></p>
+                                           <p style="color: rgb(8, 8, 8);">Ref# : <span>{{ pcrd.reference_number }}</span></p>
                                        </div>
                                    </div>
                                </div>
@@ -1437,7 +1437,7 @@
                                    <div class="col-7">
                                        <p>FROM</p>
                                        <h5 style="color: rgb(8, 8, 8);font-weight: bold;">{{cmp1.cname }}</h5>
-                                       <p class="address "> {{cmp1.caddress}}<br>
+                                       <p class="address " style="color: rgb(8, 8, 8);"> {{cmp1.caddress}}<br>
                                            {{cmp1.city}},
                                            {{cmp1.state}}<br>
                                            {{cmp1.pincode}}<br>
@@ -1447,18 +1447,18 @@
                                    <div class="col-5">
                                        <p>INVOICE TO,</p>
                                        <h5 style="color: rgb(8, 8, 8);font-weight: bold;">{{cust.title}} {{cust.firstname}} {{cust.lastname}}</h5>
-                                       <p class="address col-6" style="margin-left: -14px;" > {{ pcrd.address}} </p>   
+                                       <p class="address col-6" style="margin-left: -14px;color: rgb(8, 8, 8);" > {{ pcrd.address}} </p>   
                                    </div>
                                </div>
                                <div class="row extra-info pt-3">
                                    <div class="col-7">
-                                       <p>Credit Date : {{ pcrd.creditdate|date:'d-m-Y' }} </p>
+                                       <p style="color: rgb(8, 8, 8);">Credit Date : {{ pcrd.creditdate|date:'d-m-Y' }} </p>
                                        
                                        <p class="address col-6" style="margin-left: -14px;">  </p>   
                                    </div>
                                    <div class="col-5">
                                     
-                                       <p>Ref# : <span>{{ pcrd.reference_number }}</span></p>
+                                       <p style="color: rgb(8, 8, 8);">Ref# : <span>{{ pcrd.reference_number }}</span></p>
                                    </div>
                                </div>
                            </div>

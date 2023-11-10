@@ -33928,8 +33928,10 @@ def itemdata_qty(request):
         id = request.GET.get('id')
         id1 = request.GET.get('id1')
         id2=request.GET.get('id2')
+        tot_quan=request.GET.get('tot_quan')
         item = itemtable.objects.get(name=id2,cid=cmp1)
         invoice_no=request.GET.get('invoice_no').split(" ")[1]
+        invoice_no1=request.GET.get('invoice_no')
         opt_num=request.GET.get('invoice_no').split(" ")[0]
         item_quantity=item.stock
         print("qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq")
@@ -33938,37 +33940,47 @@ def itemdata_qty(request):
         quantity=id1
         quantity1=int(quantity)
         if int(opt_num) == 0:
-            if invoice.objects.filter(invoiceno=invoice_no).exists():
-                invid=invoice.objects.get(invoiceno=invoice_no)
-                if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
-                    itm_qty=invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn)
-                    count=itm_qty.count()
-                    print(count)
-                    if count > 1:
-                        qty_sum=0
-                        qty_lst=[]
-                        for i in itm_qty:
-                            qty_lst.append(i.qty)
-                        for i in qty_lst:
-                            qty_sum=qty_sum+i
+            if salescreditnote.objects.filter(billno=invoice_no1,cid=cmp1).exists():
+                cre_billno=salescreditnote.objects.filter(billno=invoice_no1,cid=cmp1).order_by('-reference_number').first()
+                print(cre_billno)
+            else:
+                if invoice.objects.filter(invoiceno=invoice_no).exists():
+                    invid=invoice.objects.get(invoiceno=invoice_no)
+                    print("level11111111111111111")
+                    if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
+                        itm_qty=invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn)
+                        count=itm_qty.count()
+                        print(count)
+                        print("level11111111111111111")
+                        if count > 1:
+                            qty_sum=0
+                            qty_lst=[]
+                            for i in itm_qty:
+                                qty_lst.append(i.qty)
+                            for i in qty_lst:
+                                qty_sum=qty_sum+int(i)
+                            print("level11111111111111111")
+                            # qty_sum=int(tot_quan)
 
-                        if int(quantity) > qty_sum:
-                            msg="different quantity selected"
-                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
+                            if int(quantity) > int(qty_sum):
+                                msg="bigger quantity selected"
+                                print("level finalllllllllllllllll")
+                                return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':tot_quan})
+                            else:
+                                tot_quan=int(qty_sum)-int(quantity)
+                                msg="same quantity" 
+                                return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':tot_quan})
+
                         else:
-                            msg="same quantity"
-                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
-
+                            itm_qty=invoice_item.objects.get(invoice=invid.invoiceid,hsn=hsn)
+                            if quantity1 > itm_qty.qty:
+                                msg="bigger quantity selected"
+                                return JsonResponse({'msg':msg,'quantity1':item_quantity})
+                            else:
+                                msg="same quantity"
+                                return JsonResponse({'msg':msg,'quantity1':item_quantity})
                     else:
-                        itm_qty=invoice_item.objects.get(invoice=invid.invoiceid,hsn=hsn)
-                        if quantity1 > itm_qty.qty:
-                            msg="different quantity selected"
-                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
-                        else:
-                            msg="same quantity"
-                            return JsonResponse({'msg':msg,'quantity1':item_quantity})
-                else:
-                    return JsonResponse({'msg':"no message",'quantity1':item_quantity})
+                        return JsonResponse({'msg':"no message",'quantity1':item_quantity})
         elif int(opt_num) == 1:
             if recinvoice.objects.filter(recinvoiceno=invoice_no).exists():
                 invid=recinvoice.objects.get(recinvoiceno=invoice_no)
@@ -33985,7 +33997,7 @@ def itemdata_qty(request):
                             qty_sum=qty_sum+i
 
                         if int(quantity) > qty_sum:
-                            msg="different quantity selected"
+                            msg="bigger quantity selected"
                             return JsonResponse({'msg':msg,'quantity1':item_quantity})
                         else:
                             msg="same quantity"
@@ -33994,7 +34006,7 @@ def itemdata_qty(request):
                     else:
                         itm_qty=recinvoice_item.objects.get(recinvoice=invid.recinvoiceid,hsn=hsn)
                         if quantity1 > itm_qty.qty:
-                            msg="different quantity selected"
+                            msg="bigger quantity selected"
                             return JsonResponse({'msg':msg,'quantity1':item_quantity})
                         else:
                             msg="same quantity"
@@ -34113,12 +34125,22 @@ def itemdata(request):
                 invid=invoice.objects.get(invoiceno=invoice_no)
                 print('level 2')
                 if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
+                    itm_obj=invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn)
+                    tot_qty=0
+                    itm_qty_lst=[]
+                    for i in itm_obj:
+                        itm_qty_lst.append(i.qty)
+                    for j in itm_qty_lst:
+                        tot_qty=tot_qty+int(j)
+                    print('checkinggggggggggggggggggggggggg   invoie')
+                    print(tot_qty)
+                    
                     mesg="same item"
                     print('level 3')
-                    return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
+                    return JsonResponse({"status":" not",'tot_qty':tot_qty,'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
                 else:
                     mesg="different item"
-                    print('level 4')
+                    print('level 4....................................................................')
                     return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
             
         elif int(opt_num) == 1:
@@ -34126,9 +34148,19 @@ def itemdata(request):
                 invid=recinvoice.objects.get(recinvoiceno=invoice_no)
                 print('level 2')
                 if recinvoice_item.objects.filter(recinvoice=invid.recinvoiceid,hsn=hsn).exists():
+                    itm_obj=recinvoice_item.objects.filter(recinvoice=invid.recinvoiceid,hsn=hsn)
+
+                    tot_qty=0
+                    itm_qty_lst=[]
+                    for i in itm_obj:
+                        itm_qty_lst.append(i.qty)
+                    for j in itm_qty_lst:
+                        tot_qty=tot_qty+int(j)
+                    print('checkinggggggggggggggggggggggggg   REC  invoie')
+                    print(tot_qty)
                     mesg="same item"
                     print('level 3')
-                    return JsonResponse({"status":" not",'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
+                    return JsonResponse({"status":" not",'tot_qty':tot_qty,'hsn':hsn,'qty':qty,'places':places,'price':price,'gst':gst,'sgst':sgst,'itm':itm,'mesg':mesg})
                 else:
                     mesg="different item"
                     print('level 4')
@@ -38038,25 +38070,86 @@ def addpurchasecredit(request):
         item = itemtable.objects.filter(cid=cmp1)
         banks=bankings_G.objects.all() 
         # try:
-        model_meta = salescreditnote._meta
-        pk_name = model_meta.pk.name
-        table_name = model_meta.db_table
-        with connection.cursor() as cursor:
-                cursor.execute(f"SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME = %s", [table_name])
-                next_id = cursor.fetchone()[0]
+        # model_meta = salescreditnote._meta
+        # pk_name = model_meta.pk.name
+        # table_name = model_meta.db_table
+        # with connection.cursor() as cursor:
+        #         cursor.execute(f"SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_NAME = %s", [table_name])
+        #         next_id = cursor.fetchone()[0]
         # except:
         #     print("error occured")
-        if salescreditnote.objects.filter(reference_number=1).exists():
-            credit_obj=salescreditnote.objects.get(reference_number=1)
-            cred_no=credit_obj.credit_no
-    
-            context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':next_id,'banks':banks,'cred_no':cred_no} 
-            return render(request,'app1/add_credit_note.html',context)
-        else:
-            context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':next_id,'banks':banks} 
-            return render(request,'app1/add_credit_note.html',context)
         
-    return redirect('credit_note') 
+        try:
+            # if salescreditnote.objects.filter(cid = cmp1).exists():
+            latest_bill = salescreditnote.objects.filter(cid = cmp1).order_by('-reference_number').first()
+            print("level 111111111111111111111111")
+            if latest_bill:
+                last_number = int(latest_bill.reference_number)
+                new_number = last_number + 1
+            else:
+                new_number = 1
+
+            if deletedcreditnotes.objects.filter(cid = cmp1).exists():
+                deleted = deletedcreditnotes.objects.get(cid = cmp1)
+                
+                if deleted:
+                    while int(deleted.reference_number) >= new_number:
+                        new_number+=1
+            print("22222222222222222222222222")
+            if salescreditnote.objects.filter(reference_number=1).exists():
+                credit_obj=salescreditnote.objects.get(reference_number=1)
+                cred_no=credit_obj.credit_no
+                context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':new_number,'banks':banks,'cred_no':cred_no} 
+                return render(request,'app1/add_credit_note.html',context)
+            else:
+                context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':new_number,'banks':banks} 
+                return render(request,'app1/add_credit_note.html',context)
+        except Exception as e:
+            print(e)
+            return redirect(credit_note)
+    return redirect('/')
+
+
+
+
+
+    
+    #         context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':next_id,'banks':banks,'cred_no':cred_no} 
+    #         return render(request,'app1/add_credit_note.html',context)
+    #     else:
+    #         context = {'cmp1': cmp1,'vndr':vndr,'item':item,'pbill':pbill,'next_id':next_id,'banks':banks} 
+    #         return render(request,'app1/add_credit_note.html',context)
+        
+    # return redirect('credit_note')
+
+
+def deletecreditnote(request,pk):
+    try:
+            cmp = company.objects.get(id = request.user.id)
+            bill = salescreditnote.objects.get(cid = cmp, screditid = pk)
+
+            salescreditnote1.objects.filter(scredit = bill).delete()
+
+            # Storing bill number to deleted table
+            # if entry exists and lesser than the current, update and save => Only one entry per company
+            if deletedcreditnotes.objects.filter(cid = cmp).exists():
+                deleted=deletedcreditnotes.objects.get(cid = cmp)
+                if deleted:
+                    if bill.reference_number > deleted.reference_number:
+                        deleted.reference_number = bill.reference_number
+                        deleted.save()
+                
+            else:
+                deleted = deletedcreditnotes(cid = cmp, reference_number = bill.reference_number)
+                deleted.save()
+
+            bill.delete()
+            
+            return redirect('credit_note')
+    except Exception as e:
+            print(e)
+            return redirect('credit_note')
+    # return redirect('/')
 
 def get_account_no(request):
     cmp1 = company.objects.get(id=request.session['uid'])
@@ -38131,6 +38224,7 @@ def create_credit(request):
         cmp1 = company.objects.get(id=request.session['uid'])
         if request.method == 'POST':
             debit_no = '1000'
+            billno1=request.POST['billno']
             pdebit = salescreditnote(customer =request.POST['customer'],
                                         address = request.POST['address'],
                                         email=request.POST['email'],
@@ -38171,17 +38265,19 @@ def create_credit(request):
                 tax = request.POST.getlist("tax2[]")
             discount = request.POST.getlist("discount[]")
             total = request.POST.getlist("total[]")
+            rem_qty=request.POST.getlist("stock_quantity[]")
+
           
 
             # pdeb=salescreditnote.objects.get(screditid=pdebit.screditid)
 
-            if len(items)==len(hsn)==len(quantity)==len(price)==len(tax)== len(discount)==len(total):
-                mapped=zip(items,hsn,quantity,price,tax,discount,total)
+            if len(items)==len(hsn)==len(quantity)==len(price)==len(tax)== len(discount)==len(total)==len(rem_qty):
+                mapped=zip(items,hsn,quantity,price,tax,discount,total,rem_qty)
                 mapped=list(mapped)
                 for ele in mapped:
 
                     porderAdd = salescreditnote1.objects.create(items = ele[0],hsn=ele[1],quantity=ele[2],price=ele[3],
-                    tax=ele[4],discount = ele[5],total=ele[6],scredit=pdebit)
+                    tax=ele[4],discount = ele[5],total=ele[6],rem_qty=ele[7],scredit=pdebit,billno=billno1)
 
                     itemqty = itemtable.objects.get(name=ele[0],cid=cmp1)
                     if itemqty.stock != 0:
@@ -41094,12 +41190,15 @@ def cust_details(request):
         gst_treat=cust.gsttype
         panno=cust.panno
         gstno=cust.gstin
+        print("bothhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+
         if invoice.objects.filter(customername=name,cid = comp).exists() or recinvoice.objects.filter(customername=name1,cid = comp).exists():
             if invoice.objects.filter(customername=name,cid = comp).exists() and recinvoice.objects.filter(customername=name1,cid = comp).exists():
                 inv_obj=invoice.objects.get(customername=name,cid = comp)
                 inv_id=inv_obj.invoiceno
                 recinv_obj=recinvoice.objects.get(customername=name1,cid = comp)
                 recinv_id=recinv_obj.recinvoiceno
+                print("bothhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
                 return JsonResponse({'email': email,'street': street,'city':city,'pincode': pincode,"state": state,'country' : country,'place_supply':place_supply,'inv_id':inv_id,'recinv_id':recinv_id,'gst_treat':gst_treat,'panno':panno,'gstno':gstno},safe=False)
             elif invoice.objects.filter(customername=name,cid = comp).exists():
                 inv_obj=invoice.objects.get(customername=name,cid = comp)
