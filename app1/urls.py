@@ -830,6 +830,7 @@ urlpatterns = [
     path('itemdata_qty',views.itemdata_qty,name='itemdata_qty'),
     path('itemdata_tax1',views.itemdata_tax1,name='itemdata_tax1'),
     path('deletecreditnote/<int:pk>',views.deletecreditnote,name='deletecreditnote'),
+    path('itemdata_qty_edit',views.itemdata_qty_edit,name='itemdata_qty_edit'),
 
 
     path('bnk_disables/<int:pk>', views.bnk_disables, name='bnk_disables'),

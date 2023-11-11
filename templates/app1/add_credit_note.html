@@ -219,7 +219,7 @@
                                             class="form-control hsn"/>
                                         </td>
                                         <td>
-                                            <input  type="number" name="stock_quantity[]" id="stock_qty1" >
+                                            <input  type="number" style="display: none;" name="stock_quantity[]" id="stock_qty1" >
                                             <input type="number" name='quantity[]'  style="margin-top: 21px;" placeholder='Enter Qty' id="qty1" class="form-control qty" step=0 min=0>
                                                 <div class="d-flex"><span>Available Qty :</span> <span id="qtyspan1"class=''></span></div>
                                             
@@ -1441,8 +1441,8 @@
                             <td>
                                 <input type="text" name='hsn[]' id="hsn${roinc}" placeholder='Enter HSN Code' class="form-control"/>
                             </td>                
-                            <td><input  type="number" name="stock_quantity[]" id="stock_qty${roinc}" >
-                                <input style="display: none;" type="number" name="stock_quantity[]" id="stock_qty${roinc}">  
+                            <td>
+                                <input type="number" style="display: none;" name="stock_quantity[]" id="stock_qty${roinc}">  
                                 <input type="number" name='quantity[]' placeholder='Enter Qty' id="qty${roinc}" style="margin-top: 21px;" class="form-control qty" step=0 min=0>
                                 <div><span>Available Qty :</span> <span id="qtyspan${roinc}"class=''></span></div>
                             </td>                
@@ -1625,11 +1625,18 @@
                     document.getElementById('item_label').innerHTML=""
                     sum=parseInt(data5)+parseInt(n1) 
                     document.getElementById('qtyspan'+n).innerHTML=sum;
+                    console.log(response.tot_quan);
                     document.getElementById('stock_qty'+n).value=response.tot_quan;
 
 
 
                      if(data6 == 'bigger quantity selected')
+                    {
+                        document.getElementById('item_label').innerHTML=""
+                        document.getElementById('item_label').style.color="red"
+                        document.getElementById('item_label').innerHTML=data6;
+                    }
+                    if(data6 == 'no remaining quantity')
                     {
                         document.getElementById('item_label').innerHTML=""
                         document.getElementById('item_label').style.color="red"

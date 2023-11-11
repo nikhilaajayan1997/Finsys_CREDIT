@@ -98,6 +98,7 @@ window.onload=function(){
                                 <div class="col-md-5 mt-3">
                                     <label for="validationCustom02">Billing address</label>
                                     <textarea class="form-control" name="address" rows="5" id="mailaddr">{{pcrd.address}} </textarea>
+                                    <input style="display: none;" type="text" id="scred" value="{{pcrd.screditid}}">
                                 </div>
                                 
                                 <div class="col-md-5 mt-3">
@@ -328,7 +329,7 @@ window.onload=function(){
                                             class="form-control hsn"/>
                                         </td>
                                         <td>
-                                            <input style="display: none;" type="number" name="stock_quantity[]" id="stock_qty1" >
+                                            <input  type="number" style="display: none;" value="{{pro.rem_qty}}" class="stock_quantity" name="stock_quantity[]" id="stock_qty{{forloop.counter}}" >
                                             <input type="number" name='quantity[]' value="{{pro.quantity}}"  style="margin-top: 21px;" placeholder='Enter Qty' id="qty{{forloop.counter}}" class="form-control qty" step=0 min=0>
                                                 <div class="d-flex"><span>Available Qty :</span> <label id="qtyspan{{forloop.counter}}" class=''></label></div>
                                             
@@ -1593,7 +1594,9 @@ for(i = 1; i<=roinc;i++){
                             <td>
                                 <input type="text" name='hsn[]' id="hsn${roinc}" placeholder='Enter HSN Code' class="form-control"/>
                             </td>                
-                            <td><input type="number" name='quantity[]' placeholder='Enter Qty' id="qty${roinc}" style="margin-top: 21px;" class="form-control qty" step=0 min=0>
+                            <td>
+                                <input type="number" style="display: none;" class="stock_quantity"  name="stock_quantity[]" id="stock_qty${roinc}">
+                                <input type="number" name='quantity[]' placeholder='Enter Qty' id="qty${roinc}" style="margin-top: 21px;" class="form-control qty" step=0 min=0>
                                 <div><span>Available Qty :</span> <label id="qtyspan${roinc}"class=''></label></div>
                             </td>                
                             <td>
@@ -1783,12 +1786,15 @@ for(i = 1; i<=roinc;i++){
                 var n1=$(this).val();
                 
                 $.ajax({
-                url: "{% url 'itemdata_qty' %}",
+                url: "{% url 'itemdata_qty_edit' %}",
                 type : 'GET',
                 data:{
                     id1 : $(this).val(),
                     id:$('#hsn'+n).val(),
                     id2:$('#product'+n).val(),
+                    scred:$('#scred').val(),
+                    cusname:$('#customer').val(),
+                    tot_quan:$('#stock_qty'+n).val(),
                     invoice_no:$('#inv_no').val(),
                     csrfmiddlewaretoken: '{{ csrf_token }}'
                     },
@@ -1798,9 +1804,21 @@ for(i = 1; i<=roinc;i++){
                     document.getElementById('item_label').innerHTML=""
                     sum=parseInt(data5)+parseInt(n1) 
                     document.getElementById('qtyspan'+n).innerHTML=sum;
+                    console.log("helloooooooooooooooooooooo");
+
+                    console.log(response.tot_quan);
+                    var z=response.tot_quan
+                    document.getElementById('stock_qty'+n).value=z;
+                    console.log("hellooooooo")
 
 
                      if(data6 == 'bigger quantity selected')
+                    {
+                        document.getElementById('item_label').innerHTML=""
+                        document.getElementById('item_label').style.color="red"
+                        document.getElementById('item_label').innerHTML=data6;
+                    }
+                    if(data6 == 'no remaining quantity')
                     {
                         document.getElementById('item_label').innerHTML=""
                         document.getElementById('item_label').style.color="red"
