@@ -20,7 +20,7 @@
             <div class="card radius-15">
                 <div class="card-body">
                     <div class="card-title">
-                        <center><h2 class="mb-0">Credit Note</h2></center>
+                        <center><h2 class="mb-0">Credit Note Details</h2></center>
                         <hr>
                         <div class="btn-group col-md-2" style="float: right;">
                             <a class="btn btn-outline-info text-grey" id="exportBtn">Export To Excel</a>
@@ -90,9 +90,10 @@
                                     <th class="text-uppercase">Credit Number</th>
                                     <th class="text-uppercase">Customer</th>
                                     <th class="text-uppercase">Email ID</th>
-                                    <th class="text-uppercase">Tax Amount</th>
                                     <th class="text-uppercase">Amount</th>
                                     <th class="text-uppercase">Status</th>
+                                    <th class="text-uppercase">Balance</th>
+
                                 </tr>
                             </thead>
                             <tbody>
@@ -102,9 +103,9 @@
                                         <td > <a class="idsr" style="list-style: none;"  href="{% url 'viewcredit'  p.screditid %} ">{{ p.credit_no }}</a></td>
                                         <td ><a class="idsr" style="list-style: none;"  href=" {% url 'viewcredit'  p.screditid %}">{{ p.cust }}</a></td>
                                         <td ><a class="idsr" style="list-style: none;"  href=" {% url 'viewcredit'  p.screditid %}">{{ p.email }}</a></td>
-                                        <td><a class="idsr" style="list-style: none;"  href=" {% url 'viewcredit'  p.screditid %}"> {{ p.taxamount }}</a></td>
                                         <td><a class="idsr" style="list-style: none;"  href="{% url 'viewcredit'  p.screditid %} "> {{ p.grandtotal }}</a></td>
                                         <td><a class="idsr" style="list-style: none;"  href="{% url 'viewcredit'  p.screditid %} "> {{ p.status }}</a></td>
+                                        <td><a class="idsr" style="list-style: none;"  href="{% url 'viewcredit'  p.screditid %} "> {{ p.balance }}</a></td>
                                     </tr> 
                                 {% endfor %}
                             </tbody>

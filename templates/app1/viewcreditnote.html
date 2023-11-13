@@ -346,7 +346,7 @@
                                 {% if pcrd.status == 'Draft' %}
                                 <li class="nav-item">
                                     <a class="nav-link text-light btn btn-outline-info  " role="button" href="{% url 'credit_change_status' pcrd.screditid %}" title="save this draft" style="height: 2.2rem;">
-                                        <span style="position: relative;top: -4px;">&nbsp;&nbsp;Save&nbsp;&nbsp;</span>
+                                        <span style="position: relative;top: -4px;">&nbsp;&nbsp;Convert&nbsp;&nbsp;</span>
                                     </a>
                                 </li>
                                 {% endif %}
@@ -460,7 +460,7 @@
                                 <div class="col-md-4 mt-3"></div>
 
                                 <div class="col-md-3 mt-3">
-                                    <h6 class="mb-0">Crdit No #</h6>
+                                    <h6 class="mb-0">Crdit No</h6>
                                 </div>
                                 <div class="col-md-3 mt-3">
                                     <p class="mb-0">{{ pcrd.credit_no }}</p>
@@ -489,7 +489,7 @@
                                 </div>
                                 {% else %}
                                 <div class="col-md-3 mt-3 vl">
-                                    <h6 class="mb-0">Invoice #</h6>
+                                    <h6 class="mb-0">Invoice</h6>
                                 </div>
                                 <div class="col-md-3 mt-3">
                                     <p class="mb-0">{{billno1}}</p>
@@ -714,10 +714,10 @@
                             <p class="mb-0 text-right">{{ pordr.price }}</p>
                         </div>
                         <div class="col-md-2 mt-3 vl">
-                            <h6 class="mb-0">Quantityt</h6>
+                            <h6 class="mb-0">Quantity</h6>
                         </div>
                         <div class="col-md-2 mt-3">
-                            <p class="mb-0 text-right">{{pordr.quantity}} %</p>
+                            <p class="mb-0 text-right">{{pordr.quantity}}</p>
                         </div>
                         <div class="col-2"></div>
                             <div class="col-2"></div>
@@ -728,7 +728,7 @@
                             <h6 class="mb-0">Tax</h6>
                         </div>
                         <div class="col-md-2 mt-3">
-                            <p class="mb-0 text-right">{{pordr.tax}}</p>
+                            <p class="mb-0 text-right">{{pordr.tax}}%</p>
                         </div>
                         <div class="col-md-2 mt-3 vl"> 
                             <h6 class="mb-0">Discount</h6>
@@ -859,13 +859,13 @@
                             <table>
                                 <thead style="background-color:transparent ;">
                                     <tr>
-                                        <th style="color: #000;">Product <hr></th>
-                                        <th style="color: #000;">HSN <hr></th>
-                                        <th style="color: #000;">Qty <hr></th>
-                                        <th style="color: #000;">Price <hr></th>
-                                        <th style="color: #000;">Tax <hr></th>
-                                        <th style="color: #000;">Discont <hr></th>
-                                        <th style="color: #000;">Total <hr></th>
+                                        <th style="color: #000;">Product &nbsp; <hr></th>
+                                        <th style="color: #000;">HSN &nbsp; <hr></th>
+                                        <th style="color: #000;">Qty &nbsp; <hr></th>
+                                        <th style="color: #000;">Price &nbsp; <hr></th>
+                                        <th style="color: #000;">Tax &nbsp;<hr></th>
+                                        <th style="color: #000;">Discont &nbsp; <hr></th>
+                                        <th style="color: #000;">Total &nbsp;<hr></th>
 
                                     </tr>
                                 </thead>
@@ -874,11 +874,11 @@
                                     <tr>
                                       <td style="color: #000;">{{pordr.items}} </td>
                                       <td style="color: #000;">{{pordr.hsn}}</td>
-                                      <td style="color: #000;">{{pordr.quantity}}</td>
-                                      <td style="color: #000;">{{pordr.price}}</td>
-                                      <td style="color: #000;">{{pordr.tax}}</td>
-                                      <td style="color: #000;">{{pordr.discount}}</td>
-                                      <td style="color: #000;">{{pordr.total}}</td>
+                                      <td style="color: #000;text-align: center;">{{pordr.quantity}}</td>
+                                      <td style="color: #000;text-align: center;">{{pordr.price}}</td>
+                                      <td style="color: #000;text-align: center;">{{pordr.tax}}</td>
+                                      <td style="color: #000;text-align: center;">{{pordr.discount}}</td>
+                                      <td style="color: #000;text-align: center;">{{pordr.total}}</td>
                                     </tr>
                                     {%endfor%}
                                 </tbody>
@@ -925,7 +925,7 @@
                                     <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                     <td>{{ pcrd.subtotal }}</td>
                                 </tr>
-                                {% if pcrd.igst != '0' %}
+                                {% if pcrd.igst != 0|floatformat:2 %}
                                 <tr style=" color: black;">
                                     
                                     <td> IGST</td>
@@ -936,7 +936,7 @@
                                     <td>{{ pcrd.igst }}</td>
                                 </tr>
                                 {% endif %}
-                                {% if pcrd.cgst != '0' %}
+                                {% if pcrd.cgst != 0|floatformat:2 %}
                                 <tr style=" color: black;">
                                     
                                     <td> CGST</td>
@@ -947,7 +947,7 @@
                                     <td>{{ pcrd.cgst }}</td>
                                 </tr>
                                 {% endif %}
-                                {% if pcrd.sgst != '0' %}
+                                {% if pcrd.sgst != 0|floatformat:2 %}
                                 <tr style=" color: black;">
                                     
                                     <td> SGST</td>
@@ -1228,6 +1228,12 @@
                                                    <td style="color:black">Shpping Charge</td>
                                                    <td style="color:black">{{pcrd.shipping_charge}}</td>
                                                </tr>
+                                               {% if pcrd.adjustment != '0' %}
+                                               <tr class="shiprow d-none">
+                                                <td style="color:black">Adjustment</td>
+                                                <td style="color:black">{{pcrd.adjustment}}</td>
+                                              </tr>
+                                              {% endif %}
                                                <tfoot>
                                                    <tr>
                                                        <td style="color:black">Grand Total:</td>
@@ -1384,6 +1390,12 @@
                                                <td style="color:black">Shpping Charge</td>
                                                <td style="color:black">{{pcrd.shipping_charge}}</td>
                                            </tr>
+                                           {% if pcrd.adjustment != '0' %}
+                                           <tr class="shiprow d-none">
+                                            <td style="color:black">Adjustment</td>
+                                            <td style="color:black">{{pcrd.adjustment}}</td>
+                                        </tr>
+                                        {% endif %}
                                            <tfoot>
                                                <tr>
                                                    <td style="color:black">Grand Total:</td>
@@ -1547,6 +1559,12 @@
                                            <td style="color:black">Shpping Charge</td>
                                            <td style="color:black">{{pcrd.shipping_charge}}</td>
                                        </tr>
+                                       {% if pcrd.adjustment != '0' %}
+                                       <tr class="shiprow d-none">
+                                        <td style="color:black">Adjustment</td>
+                                        <td style="color:black">{{pcrd.adjustment}}</td>
+                                    </tr>
+                                       {% endif %}
                                        <tfoot>
                                            <tr>
                                                <td style="color:black">Grand Total:</td>

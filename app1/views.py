@@ -34188,35 +34188,80 @@ def itemdata_qty_edit(request):
         hsn=id
         quantity=id1
         quantity1=int(quantity)
-        if int(opt_num) == 0:
+        if int(opt_num) == 0:# block for invoice number 
                 print("inside new ifffffffffffffffffffffffffffffffffffff")
                 if salescreditnote.objects.filter(billno=invoice_no1,cid=cmp1,customer=cusname).exists():
+                #block for checking credit note edit 
                         print("inside new ifffffffffffffffffffffffffffffffffffff")
                         ob=salescreditnote.objects.get(billno=invoice_no1,cid=cmp1,screditid=scred)
                         idd=ob.screditid
-                        cre_billno=salescreditnote1.objects.get(billno=invoice_no1,hsn=hsn,scredit=idd)
-
-                        item_bal=cre_billno.rem_qty
-                        ext_qun=cre_billno.quantity
-                        item_bal=int(item_bal)+int(ext_qun)
-                        print("inside new wwwwwwwwwwwwwwwwwwwwwwwwwwwwww")
-                        print(item_bal)
-                        print(quantity)
-                        if int(quantity) > int(item_bal):
-                            if int(item_bal)==0:
-                                msg="no remaining quantity" 
-                                return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':item_bal})
-                            else:
-                                msg="bigger quantity selected"
-                                print("new iffff  *************************")
+                        if salescreditnote1.objects.filter(billno=invoice_no1,hsn=hsn,scredit=idd).exists():
+                            cre_billno=salescreditnote1.objects.get(billno=invoice_no1,hsn=hsn,scredit=idd)
+                            item_bal=cre_billno.rem_qty
+                            ext_qun=cre_billno.quantity
+                            item_bal=int(item_bal)+int(ext_qun)
+                            print("inside new wwwwwwwwwwwwwwwwwwwwwwwwwwwwww")
+                            print(item_bal)
+                            print(quantity)
+                            if int(quantity) > int(item_bal):
+                                if int(item_bal)==0:
+                                    msg="no remaining quantity" 
+                                    return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':item_bal})
+                                else:
+                                    msg="bigger quantity selected"
+                                    print("new iffff  *************************")
+                                    return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':tot_quan})
+                            else:                    
+                                tot_quan=int(item_bal)-int(quantity)
+                                msg="same quantity" 
                                 return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':tot_quan})
-                        else:                    
-                            tot_quan=int(item_bal)-int(quantity)
-                            msg="same quantity" 
-                            return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':tot_quan})
+                        else:
+                            #if new item adding in edit
+                            if invoice.objects.filter(invoiceno=invoice_no).exists():
+                                    invid=invoice.objects.get(invoiceno=invoice_no)
+                                    print("level11111111111111111")
+                                    if invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn).exists():
+                                        itm_qty=invoice_item.objects.filter(invoice=invid.invoiceid,hsn=hsn)
+                                        count=itm_qty.count()
+                                        print(count)
+                                        print("level11111111111111111")
+                                        #if same item is added multiple times in invoice 
+                                        if count > 1:
+                                            qty_sum=0
+                                            qty_lst=[]
+                                            for i in itm_qty:
+                                                qty_lst.append(i.qty)
+                                            for i in qty_lst:
+                                                qty_sum=qty_sum+int(i)
+                                            print("level11111111111111111")
+                                            # qty_sum=int(tot_quan)
+                                            if int(quantity) > int(qty_sum):
+                                                msg="bigger quantity selected"
+                                                print("level finalllllllllllllllll")
+                                                return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':tot_quan})
+                                            else:
+                                                tot_quan=int(qty_sum)-int(quantity)
+                                                msg="same quantity" 
+                                                return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':tot_quan})
+                                        else:
+                                            #if single item added 
+                                            itm_qty=invoice_item.objects.get(invoice=invid.invoiceid,hsn=hsn)
+                                            if quantity1 > itm_qty.qty:
+                                                msg="bigger quantity selected"
+                                                return JsonResponse({'msg':msg,'quantity1':item_quantity})
+                                            else:
+                                                qty_sum=itm_qty.qty
+                                                tot_quan=int(qty_sum)-int(quantity)
+                                                msg="same quantity"
+                                                return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':tot_quan})
+                                    else:
+                                        return JsonResponse({'msg':"no message",'quantity1':item_quantity})
+
                 else:
+                        # block for creditnote create
                         print("inside new ifffffffffffffffffffffffffffffffffffff")
                         if salescreditnote.objects.filter(billno=invoice_no1,cid=cmp1).exists():
+                        # For checking creitnote create ,if multiple credits nots created for same invoice number
                                 print("inside new ifffffffffffffffffffffffffffffffffffff")
                                 cre_billno=salescreditnote1.objects.filter(billno=invoice_no1,hsn=hsn)
                                 rem_qty_lst=[]
@@ -34244,6 +34289,7 @@ def itemdata_qty_edit(request):
                                     msg="same quantity" 
                                     return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':tot_quan})
                         else:
+                        # block for checking create credit note, if first time creating creditnote for invoice number
                                 if invoice.objects.filter(invoiceno=invoice_no).exists():
                                     invid=invoice.objects.get(invoiceno=invoice_no)
                                     print("level11111111111111111")
@@ -34252,6 +34298,7 @@ def itemdata_qty_edit(request):
                                         count=itm_qty.count()
                                         print(count)
                                         print("level11111111111111111")
+                                        #if same item is added multiple times in invoice 
                                         if count > 1:
                                             qty_sum=0
                                             qty_lst=[]
@@ -34269,7 +34316,9 @@ def itemdata_qty_edit(request):
                                                 tot_quan=int(qty_sum)-int(quantity)
                                                 msg="same quantity" 
                                                 return JsonResponse({'msg':msg,'quantity1':item_quantity,'tot_quan':tot_quan})
+                                        
                                         else:
+                                            #if single item added 
                                             itm_qty=invoice_item.objects.get(invoice=invid.invoiceid,hsn=hsn)
                                             if quantity1 > itm_qty.qty:
                                                 msg="bigger quantity selected"
@@ -34288,7 +34337,7 @@ def itemdata_qty_edit(request):
                         ob=salescreditnote.objects.get(billno=invoice_no1,cid=cmp1,screditid=scred)
                         idd=ob.screditid
                         cre_billno=salescreditnote1.objects.get(billno=invoice_no1,hsn=hsn,scredit=idd)
-                        item_bal=cre_billno.itm_qty
+                        item_bal=cre_billno.rem_qty
                         print("inside new ifffffffffffffffffffffffffffffffffffff")
                         print(item_bal)
                         if int(quantity) > int(item_bal):
@@ -34368,10 +34417,6 @@ def itemdata_qty_edit(request):
                                     return JsonResponse({'msg':"no message",'quantity1':item_quantity})
                             else:
                                 return JsonResponse({'msg':"no message",'quantity1':item_quantity})
-
-                
-
-
  
 def itemdata_tax1(request):
     if 'uid' in request.session:
@@ -38624,8 +38669,7 @@ def create_credit(request):
             discount = request.POST.getlist("discount[]")
             total = request.POST.getlist("total[]")
             rem_qty=request.POST.getlist("stock_quantity[]")
-
-          
+           
 
             # pdeb=salescreditnote.objects.get(screditid=pdebit.screditid)
 
@@ -38633,19 +38677,18 @@ def create_credit(request):
                 mapped=zip(items,hsn,quantity,price,tax,discount,total,rem_qty)
                 mapped=list(mapped)
                 for ele in mapped:
-
                     porderAdd = salescreditnote1.objects.create(items = ele[0],hsn=ele[1],quantity=ele[2],price=ele[3],
                     tax=ele[4],discount = ele[5],total=ele[6],rem_qty=ele[7],scredit=pdebit,billno=billno1)
-
                     itemqty = itemtable.objects.get(name=ele[0],cid=cmp1)
                     if itemqty.stock != 0:
                         temp=0
                         temp = itemqty.stock 
-
                         temp = temp+int(ele[2])
                         itemqty.stock =temp
                         itemqty.save()
-
+                    stk=salescreditnote1.objects.get(items=ele[0],hsn=ele[1],scredit=pdebit)
+                    stk.stock=temp
+                    stk.save()
             return redirect('credit_note')
         return redirect('credit_note')
     return redirect('/') 
@@ -38922,36 +38965,39 @@ def editcreditfun(request,id):
             total = request.POST.getlist("total[]")
             credid =request.POST.getlist("id[]")
             rem_qty=request.POST.getlist("stock_quantity[]")
+            stock=request.POST.getlist("avail_stock[]") 
 
-            item_ids = [int(id) for id in credid]
+            # item_ids = [int(id) for id in credid]
             cred= salescreditnote.objects.get(screditid =pdebt.screditid)
-            cred_item = salescreditnote1.objects.filter(scredit=cred)
-            object_ids = [obj.id for obj in cred_item]
-            ids_to_delete = [obj_id for obj_id in object_ids if obj_id not in item_ids]
-            salescreditnote1.objects.filter(id__in=ids_to_delete).delete()
+            # cred_item = salescreditnote1.objects.filter(scredit=cred)
+            # object_ids = [obj.id for obj in cred_item]
+            # ids_to_delete = [obj_id for obj_id in object_ids if obj_id not in item_ids]
+            # salescreditnote1.objects.filter(id__in=ids_to_delete).delete()
+            objects_to_delete = salescreditnote1.objects.filter(scredit=cred)
+            objects_to_delete.delete()
             
             pdebitid=salescreditnote.objects.get(screditid=id)
             
 
-            if len(items)==len(hsn)==len(quantity)==len(price)==len(tax)==len(discount)==len(total)==len(rem_qty):
-                mapped=zip(items,hsn,quantity,price,tax,discount,total,rem_qty,item_ids)
+            if len(items)==len(hsn)==len(quantity)==len(price)==len(tax)==len(discount)==len(total)==len(rem_qty)==len(stock):
+                mapped=zip(items,hsn,quantity,price,tax,discount,total,rem_qty,stock)
                 mapped=list(mapped)
                 count = salescreditnote1.objects.filter(scredit=pdebitid).count()
 
                 for ele in mapped:
-                    print("helloooooooo")
-                    if int(len(items))>int(count) :
-                        if  ele[8] == 0:
+                    # print("helloooooooo")
+                    # if int(len(items))>int(count) :
+                    #     if  ele[8] == 0:
                             created = salescreditnote1.objects.create(items = ele[0],hsn=ele[1],quantity=ele[2],price=ele[3],
-                            tax=ele[4],discount=ele[5],total=ele[6],rem_qty=ele[7],scredit=pdebitid,billno=billno1)
-                        else:
-                            created = salescreditnote1.objects.filter(id=ele[7]).update(items = ele[0],hsn = ele[1],quantity=ele[2],price=ele[3],
-                            tax=ele[4],discount = ele[5],total=ele[6],rem_qty=ele[7],billno=billno1)
+                            tax=ele[4],discount=ele[5],total=ele[6],rem_qty=ele[7],stock=ele[8],scredit=pdebitid,billno=billno1)
+                    #     else:
+                    #         created = salescreditnote1.objects.filter(id=ele[9]).update(items = ele[0],hsn = ele[1],quantity=ele[2],price=ele[3],
+                    #         tax=ele[4],discount = ele[5],total=ele[6],rem_qty=ele[7],stock=ele[8],billno=billno1)
 
-                    else:
-                        print('helloooo')
-                        created = salescreditnote1.objects.filter(id=ele[8]).update(items = ele[0],hsn = ele[1],quantity=ele[2],price=ele[3],
-                        tax=ele[4],discount=ele[5],total=ele[6],rem_qty=ele[7],billno=billno1)
+                    # else:
+                    #     print('helloooo')
+                    #     created = salescreditnote1.objects.filter(id=ele[9]).update(items = ele[0],hsn = ele[1],quantity=ele[2],price=ele[3],
+                    #     tax=ele[4],discount=ele[5],total=ele[6],rem_qty=ele[7],stock=ele[8],billno=billno1)
                         
 
             return redirect('viewcredit',id)

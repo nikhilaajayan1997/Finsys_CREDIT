@@ -210,7 +210,7 @@
         ws['!rows'] = [{ hpt: 30 }];
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
-        XLSX.writeFile(wb, "credit_note.xlsx"); 
+        XLSX.writeFile(wb, "credit_note_details.xlsx"); 
       });
 
     </script>
@@ -279,7 +279,7 @@
             const headerDiv = document.createElement('div');
             headerDiv.style.textAlign = 'center';
             headerDiv.style.marginBottom = '20px';
-            headerDiv.innerHTML = `<p> ${companyName}</p><h1>CREDIT NOTE REPORT</h1><p>From: ${fromDate} To:  ${toDate}</p>`;
+            headerDiv.innerHTML = `<p> ${companyName}</p><h1>CREDIT NOTE DETAILS</h1><p>From: ${fromDate} To:  ${toDate}</p>`;
     
             printWindow.document.body.insertBefore(headerDiv, pdfCardClone[0]);
             
@@ -308,7 +308,7 @@
                 ${companyName}
             </div>
             <div style="text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 10px; color: black;">
-                CREDIT NOTE REPORT
+                CREDIT NOTE DETAILS
             </div>
             <div style="text-align: center; font-size: 12px; color: black;">
                ${fromDate} &nbsp; ${toDate}
@@ -351,7 +351,7 @@
             var opt =
             {
                 margin: 1,
-                filename: 'Creditnote_Report' + '.pdf',
+                filename: 'Creditnote_Details' + '.pdf',
                 image: { type: 'png', quality: 1.0 },
                 html2canvas: { scale: 3, useCORS: true, backgroundColor: null },
                 jsPDF: { unit: 'in', format: 'a3', orientation: 'portrait' }
@@ -447,11 +447,11 @@ document.getElementById('todate').addEventListener('change', filterTableByDate);
         let totalAmount = 0;
 
         // Iterate over table rows to calculate totals
-        const rows = document.querySelectorAll('#tbl_exporttable_to_xls tbody tr');
+        const rows = document.querySelectorAll('#table tbody tr');
 
         rows.forEach(row => {
-            const taxAmount = parseFloat(row.querySelector('td:nth-child(5)').innerText);
-            const amount = parseFloat(row.querySelector('td:nth-child(6)').innerText);
+            const taxAmount = parseFloat(row.querySelector('td:nth-child(6)').innerText);
+            const amount = parseFloat(row.querySelector('td:nth-child(5)').innerText);
 
             if (!isNaN(taxAmount)) {
                 totalTaxAmount += taxAmount;

@@ -66,7 +66,7 @@ window.onload=function(){
             <div class="card radius-15">
                 <div class="card-body">
                     <div class="card-title">
-                        <center><h3 class="mb-0" id="invnumb">CREDIT NOTE</h3></center>
+                        <center><h3 class="mb-0" id="invnumb">EDIT CREDIT NOTE</h3></center>
                     </div>
                     <hr/>
                 </div>
@@ -330,8 +330,9 @@ window.onload=function(){
                                         </td>
                                         <td>
                                             <input  type="number" style="display: none;" value="{{pro.rem_qty}}" class="stock_quantity" name="stock_quantity[]" id="stock_qty{{forloop.counter}}" >
-                                            <input type="number" name='quantity[]' value="{{pro.quantity}}"  style="margin-top: 21px;" placeholder='Enter Qty' id="qty{{forloop.counter}}" class="form-control qty" step=0 min=0>
-                                                <div class="d-flex"><span>Available Qty :</span> <label id="qtyspan{{forloop.counter}}" class=''></label></div>
+                                            <input type="number" style="display: none;" value="{{pro.stock}}" class="avail_stock" name="avail_stock[]" id="avail_stock{{forloop.counter}}">
+                                            <input type="number"  name='quantity[]' value="{{pro.quantity}}"  style="margin-top: 21px;" placeholder='Enter Qty' id="qty{{forloop.counter}}" class="form-control qty" step=0 min=0>
+                                                <div class="d-flex"><span>Available Qty :</span> <label id="qtyspan{{forloop.counter}}"  class=''>{{pro.stock}}</label></div>
                                             
 
                                         </td>
@@ -373,8 +374,8 @@ window.onload=function(){
                                             <input type="number" name='total[]' id="total{{forloop.counter}}" value="{{pro.total}}"  placeholder='0.00' class="form-control total"/>
                                         </td>
                                         <td>
-                                            <button type="button" id="{{forloop.counter}}" class="btn  font-weight-bold clone_row fas fa-clone px-2 my-1 py-1" title="Clone Row" style="background-color:rgb(88, 107, 143);"></button><br>
-                                            <button type="button" id="{{forloop.counter}}" class="btn btn-danger remove_row px-2 py-1 mx-1 fas fa-close" title="Remove Row"> </button>
+                                            <!-- <button type="button" id="{{forloop.counter}}" class="btn  font-weight-bold clone_row fa fa-clone px-2 my-1 py-1" title="Clone Row" style="background-color:rgb(88, 107, 143);"></button><br> -->
+                                            <button type="button" id="{{forloop.counter}}" class="btn btn-danger remove_row px-2 py-1 mx-1 fa fa-close" title="Remove Row"> </button>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -1587,7 +1588,7 @@ for(i = 1; i<=roinc;i++){
                                         {% endfor %}
                                     </select>
                                     <a href="#">
-                                        <button type="button" class="btn btn-outline-secondary ml-1" data-target="#newitem" data-toggle="modal">+</button>
+                                        <button type="button" class="btn btn-outline-secondary m l-1" data-target="#newitem" data-toggle="modal">+</button>
                                     </a>                    
                                 </div>
                             </td>
@@ -1595,7 +1596,8 @@ for(i = 1; i<=roinc;i++){
                                 <input type="text" name='hsn[]' id="hsn${roinc}" placeholder='Enter HSN Code' class="form-control"/>
                             </td>                
                             <td>
-                                <input type="number" style="display: none;" class="stock_quantity"  name="stock_quantity[]" id="stock_qty${roinc}">
+                                <input type="number" style="display: none;"  class="stock_quantity"  name="stock_quantity[]" id="stock_qty${roinc}">
+                                <input type="number" style="display: none;"  class="avail_stock"  name="avail_stock[]"  id="avail_stock${roinc}">
                                 <input type="number" name='quantity[]' placeholder='Enter Qty' id="qty${roinc}" style="margin-top: 21px;" class="form-control qty" step=0 min=0>
                                 <div><span>Available Qty :</span> <label id="qtyspan${roinc}"class=''></label></div>
                             </td>                
@@ -1634,7 +1636,6 @@ for(i = 1; i<=roinc;i++){
                             </td>        
 
                             <td>
-                                <button type="button" id="${roinc}" class="btn  font-weight-bold clone_row fas fa-clone px-2 py-1 my-1" style="background-color:rgb(88, 107, 143);"></button><br>
                                 <button type="button" id="${roinc}" class="btn btn-danger px-2 mx-1 py-1 remove_row fas fa-close"></button>
                             </td>
                             
@@ -1804,6 +1805,7 @@ for(i = 1; i<=roinc;i++){
                     document.getElementById('item_label').innerHTML=""
                     sum=parseInt(data5)+parseInt(n1) 
                     document.getElementById('qtyspan'+n).innerHTML=sum;
+                    document.getElementById('avail_stock'+n).value=sum;
                     console.log("helloooooooooooooooooooooo");
 
                     console.log(response.tot_quan);
@@ -2273,7 +2275,7 @@ for(i = 1; i<=roinc;i++){
                             console.log(data.email);
                             document.getElementById('cred_email').value = data.email;
                             document.getElementById('mailaddr').value = data.street + '\n' + data.city + '\n' + data.state + '\n' + data.country  + '\n' + data.pincode ;
-                            document.getElementById('plosu').value=data.place_supply;
+                            document.getElementById('plosu').value=data.state;
                             document.getElementById('gst_treat').value=data.gst_treat;
                             var place_supply=document.getElementById('plosu').value;
         var cmp_place=document.getElementById('cmpstate').value;

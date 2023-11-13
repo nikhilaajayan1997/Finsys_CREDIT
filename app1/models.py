@@ -1714,6 +1714,7 @@ class salescreditnote1(models.Model):
     total = models.CharField(max_length=100,null=True)
     billno=models.CharField(max_length=100,null=True)
     rem_qty=models.CharField(max_length=100,null=True)
+    stock=models.CharField(max_length=100,null=True)
 
 
 

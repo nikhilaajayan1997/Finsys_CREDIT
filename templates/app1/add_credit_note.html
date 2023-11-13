@@ -219,7 +219,7 @@
                                             class="form-control hsn"/>
                                         </td>
                                         <td>
-                                            <input  type="number" style="display: none;" name="stock_quantity[]" id="stock_qty1" >
+                                            <input  type="number" style="display: none;"  name="stock_quantity[]" id="stock_qty1" >
                                             <input type="number" name='quantity[]'  style="margin-top: 21px;" placeholder='Enter Qty' id="qty1" class="form-control qty" step=0 min=0>
                                                 <div class="d-flex"><span>Available Qty :</span> <span id="qtyspan1"class=''></span></div>
                                             
@@ -264,7 +264,7 @@
                                             <input type="number" name='total[]' id="total1" placeholder='0.00' class="form-control total"/>
                                         </td>
                                         <td>
-                                            <button type="button" id="1" class="btn  font-weight-bold clone_row fas fa-clone px-2 my-1 py-1" title="Clone Row" style="background-color:rgb(88, 107, 143);"></button><br>
+                                            <!-- <button type="button" id="1" class="btn  font-weight-bold clone_row fas fa-clone px-2 my-1 py-1" title="Clone Row" style="background-color:rgb(88, 107, 143);"></button><br> -->
                                             <button type="button" id="1" class="btn btn-danger remove_row px-2 py-1 mx-1 fas fa-close" title="Remove Row"> </button>
                                         </td>
                                     </tr>
@@ -1482,7 +1482,6 @@
                             </td>        
 
                             <td>
-                                <button type="button" id="${roinc}" class="btn  font-weight-bold clone_row fas fa-clone px-2 py-1 my-1" style="background-color:rgb(88, 107, 143);"></button><br>
                                 <button type="button" id="${roinc}" class="btn btn-danger px-2 mx-1 py-1 remove_row fas fa-close"></button>
                             </td>
                             
@@ -1707,6 +1706,7 @@
             $(document).on('click','.remove_row',function(){
                 var row_id = $(this).attr("id");
                 $('#addr0'+row_id+'').remove();
+                document.getElementById('item_label').innerHTML="";
                 
                 calc();
             });
@@ -1804,7 +1804,7 @@
                 gst = taxamount/2
                 $('#cgst').val(parseFloat(gst.toFixed(2)));
                 $('#sgst').val(parseFloat(gst.toFixed(2)));
-                $('#igst').val(parseFloat(d.toFixed(2)));
+                $('#igst').val(d.toFixed(2));
             }
                 
             if (bc != "{{ cmp1.state }}"  ) {
@@ -1823,7 +1823,7 @@
             }
         }
 
-        $(document).on('keyup',"#ship",function(){
+        $(document).on('change',"#ship",function(){
             var subtot = $('#sub_total').val();
             var tax = $('#tax_amount').val();
             var sh = $("#ship").val();
@@ -2050,7 +2050,7 @@
                             document.getElementById('cred_email').value = data.email;
                             document.getElementById('mailaddr').value = data.street + '\n' + data.city + '\n' + data.state + '\n' + data.country  + '\n' + data.pincode ;
                             
-                            document.getElementById('plosu').value=data.place_supply;
+                            document.getElementById('plosu').value=data.state;
                             document.getElementById('gst_treat').value=data.gst_treat;
                             $(".seltax").removeClass('d-flex');
                 $(".seltax").addClass('d-none');
