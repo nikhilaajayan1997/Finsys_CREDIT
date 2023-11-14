@@ -38831,12 +38831,9 @@ def credit_change_status(request,pk):
     cre_obj=salescreditnote.objects.get(screditid=pk,cid=cmp1)
     cre_obj.status='Save'
     cre_obj.save()
-    return redirect('credit_note')
-
-
+    return redirect('viewcredit',cre_obj.screditid)
 
 def editcreditnote(request, id):
-    
     cmp1 = company.objects.get(id=request.session['uid'])
     pcrd=salescreditnote.objects.get(screditid=id)
     pcrd1 = salescreditnote1.objects.filter(scredit=pcrd.screditid)
